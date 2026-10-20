@@ -25,7 +25,6 @@ import {
   EyeOff,
   Square,
 } from 'lucide-react';
-import { DevPlaceholderBadge } from '../components/common/UIPrimitives';
 import { NavRoute } from '../types/navigation';
 import { credentialVault } from '../services/storage/indexedDbVault';
 import { groundedSynthesis, GroundedAnswerResult, ResearchProgressUpdate } from '../services/synthesis/groundedSynthesis';
@@ -85,131 +84,6 @@ const SourceFavicon: React.FC<{
   );
 };
 
-// Canonical baseline demonstration sources
-const CANONICAL_SOURCES: SourceDisplayItem[] = [
-  {
-    id: 1,
-    name: 'World Economic Forum',
-    domain: 'weforum.org',
-    initials: 'WEF',
-    bgClass: 'bg-[#004B87] text-white',
-    accentColor: '#004B87',
-    title: 'The Future of Jobs Report 2025',
-    excerpt:
-      'Comprehensive empirical overview of technology adoption timelines, global labor reallocation, and macro economic shifting across 45 national economies.',
-    citationsCount: 3,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=weforum.org&sz=64',
-    url: 'https://www.weforum.org/publications/the-future-of-jobs-report-2025',
-  },
-  {
-    id: 2,
-    name: 'McKinsey & Company',
-    domain: 'mckinsey.com',
-    initials: 'McK',
-    bgClass: 'bg-[#051C2C] text-white',
-    accentColor: '#051C2C',
-    title: 'AI and the Global Economy: Automation Potential',
-    excerpt:
-      'Granular task modeling detailing how up to 30% of current work hours globally could be automated by 2030 through generative models.',
-    citationsCount: 2,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=mckinsey.com&sz=64',
-    url: 'https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai',
-  },
-  {
-    id: 3,
-    name: 'Harvard University',
-    domain: 'harvard.edu',
-    initials: 'HAR',
-    bgClass: 'bg-[#A51C30] text-white',
-    accentColor: '#A51C30',
-    title: 'How AI is Changing Work: Field Experiments',
-    excerpt:
-      'Randomized control trials across 758 consultants demonstrating 40% performance boosts when collaborating with LLM toolchains on jagged-frontier tasks.',
-    citationsCount: 2,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=harvard.edu&sz=64',
-    url: 'https://www.hbs.edu/faculty/Pages/item.aspx?num=64700',
-  },
-  {
-    id: 4,
-    name: 'Financial Times',
-    domain: 'ft.com',
-    initials: 'FT',
-    bgClass: 'bg-[#FFF1E5] text-[#333333] border border-[#E8D0BE]',
-    accentColor: '#FFF1E5',
-    title: 'The Jobs of Tomorrow: Hybrid Human-Machine Teams',
-    excerpt:
-      'Analysis of wage premiums for individuals skilled at cross-agent management and algorithmic workflow design in corporate environments.',
-    citationsCount: 3,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=ft.com&sz=64',
-    url: 'https://www.ft.com',
-  },
-  {
-    id: 5,
-    name: 'UNESCO',
-    domain: 'unesco.org',
-    initials: 'UNE',
-    bgClass: 'bg-[#0077D4] text-white',
-    accentColor: '#0077D4',
-    title: 'AI Skills for the Future: Educational Preparedness',
-    excerpt:
-      'International baseline recommendations on pedagogical reform, ethical AI literacy, and systems engineering for incoming labor forces.',
-    citationsCount: 2,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=unesco.org&sz=64',
-    url: 'https://www.unesco.org',
-  },
-  {
-    id: 6,
-    name: 'MIT Technology Review',
-    domain: 'technologyreview.com',
-    initials: 'MIT',
-    bgClass: 'bg-[#D60000] text-white',
-    accentColor: '#D60000',
-    title: 'The Algorithmic Workforce: Navigating Autonomous Systems',
-    excerpt:
-      'Case studies across 12 Fortune 500 enterprises adopting multi-agent orchestration pipelines for customer operations.',
-    citationsCount: 1,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=technologyreview.com&sz=64',
-    url: 'https://www.technologyreview.com',
-  },
-  {
-    id: 7,
-    name: 'Brookings Institution',
-    domain: 'brookings.edu',
-    initials: 'BRK',
-    bgClass: 'bg-[#002D62] text-white',
-    accentColor: '#002D62',
-    title: 'Labor Market Dynamism and Automation Exposure',
-    excerpt:
-      'Regional disparity indices assessing automation impact across high-income metropolitan clusters vs rural industrial centers.',
-    citationsCount: 2,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=brookings.edu&sz=64',
-    url: 'https://www.brookings.edu',
-  },
-  {
-    id: 8,
-    name: 'OECD iLibrary',
-    domain: 'oecd.org',
-    initials: 'OECD',
-    bgClass: 'bg-[#0A4D8C] text-white',
-    accentColor: '#0A4D8C',
-    title: 'OECD Employment Outlook: AI and the Labor Market',
-    excerpt:
-      'Comparative policy briefs from 38 OECD member states regarding worker retraining grants and algorithmic transparency legislation.',
-    citationsCount: 1,
-    verified: true,
-    faviconUrl: 'https://www.google.com/s2/favicons?domain=oecd.org&sz=64',
-    url: 'https://www.oecd.org',
-  },
-];
-
-
 export const ResearchPage: React.FC<ResearchPageProps> = ({
   conversationId,
   initialQuery,
@@ -265,10 +139,9 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
 
       const targetId =
         conversationId ||
-        (await conversationService.getActiveConversationId()) ||
-        'ai-jobs-impact';
+        (await conversationService.getActiveConversationId());
 
-      const convo = await conversationService.get(targetId);
+      const convo = targetId ? await conversationService.get(targetId) : null;
 
       if (!isMounted) return;
 
@@ -302,11 +175,16 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
 
           if (latestAssistant.sources && latestAssistant.sources.length > 0) {
             setLiveSources(latestAssistant.sources.map(createSourceItemFromNormalized));
+          } else {
+            setLiveSources([]);
           }
           setIsInterrupted(Boolean(latestAssistant.isInterrupted));
         } else if (hasKey && (convo.initialQuery || initialQuery)) {
           // If conversation has no response yet, execute research
           executeLiveResearch(convo.initialQuery || initialQuery || convo.title, convo.id);
+        } else {
+          setSynthesizedResult(null);
+          setLiveSources([]);
         }
       } else if (initialQuery && initialQuery.trim().length > 0) {
         // Create new conversation
@@ -323,6 +201,11 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
             executeLiveResearch(initialQuery, created.id);
           }
         }
+      } else {
+        setActiveConversation(null);
+        setCurrentQueryText('');
+        setSynthesizedResult(null);
+        setLiveSources([]);
       }
     }
 
@@ -514,8 +397,8 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
     }
   };
 
-  // Determine active sources to display (live sources if available, otherwise canonical demonstration)
-  const activeSources = liveSources && liveSources.length > 0 ? liveSources : CANONICAL_SOURCES;
+  // Active sources to display from live search results
+  const activeSources = liveSources || [];
 
   const scrollToCitation = (id: number) => {
     setHighlightedCitationId(id);
@@ -607,11 +490,6 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
           <span>Research URL copied to clipboard</span>
         </div>
       )}
-
-      {/* Scope Badge */}
-      <div className="mb-4">
-        <DevPlaceholderBadge label="Openquire Grounded Answer Engine & Interactive Source Explorer (Phase 3)" />
-      </div>
 
       {/* BYOK Status Banner when no key is set */}
       {hasGeminiKey === false && (
@@ -861,7 +739,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
             <div>
               <p className="text-xs sm:text-sm font-semibold">{synthesisError}</p>
               <p className="text-xs text-amber-700 mt-0.5">
-                Showing verified canonical baseline answer and sources. You can select another available model below to re-synthesize.
+                Research synthesis could not be completed. You can verify your API key in Settings or select another model below to re-synthesize.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -978,11 +856,11 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                 <span>Executive Summary</span>
               </div>
               <span className="text-[11px] font-medium text-[#717171] bg-[#F1F2ED] px-2 py-0.5 rounded border border-[#E8E8E5]">
-                {synthesizedResult ? 'Live Model Synthesis' : 'High Confidence · Multi-model consensus'}
+                {synthesizedResult ? 'Live Model Synthesis' : activeSources.length > 0 ? 'Evidence Retrieved' : 'Awaiting Synthesis'}
               </span>
             </div>
 
-            {/* Synthesized Live Answer OR Canonical Baseline */}
+            {/* Synthesized Live Answer OR Dynamic Empty/Evidence State */}
             {synthesizedResult ? (
               <div className="text-sm sm:text-base text-[#191919] leading-relaxed">
                 <MarkdownAnswerRenderer
@@ -1007,169 +885,81 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-sm sm:text-base text-[#191919] leading-relaxed">
-                  AI is projected to fundamentally reshape the global workforce over the coming decade rather than trigger a net job apocalypse. While routine cognitive and manual duties face substantial transformation, technology adoption will induce net productivity gains, unlock emergent job clusters, and drastically tilt compensation in favor of complex problem resolution and human-centric nuance.
-                  {/* Interactive citation pins */}
-                  <button
-                    type="button"
-                    onClick={() => scrollToCitation(1)}
-                    className="inline-flex items-center justify-center mx-1 w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] text-[11px] font-mono font-bold hover:bg-[#A7EB50] hover:scale-110 transition-transform cursor-pointer shadow-2xs"
-                    title="Source 1: weforum.org"
-                  >
-                    1
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => scrollToCitation(2)}
-                    className="inline-flex items-center justify-center mx-1 w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] text-[11px] font-mono font-bold hover:bg-[#A7EB50] hover:scale-110 transition-transform cursor-pointer shadow-2xs"
-                    title="Source 2: mckinsey.com"
-                  >
-                    2
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => scrollToCitation(3)}
-                    className="inline-flex items-center justify-center mx-1 w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] text-[11px] font-mono font-bold hover:bg-[#A7EB50] hover:scale-110 transition-transform cursor-pointer shadow-2xs"
-                    title="Source 3: harvard.edu"
-                  >
-                    3
-                  </button>
+            ) : isSynthesizing ? (
+              <div className="py-8 text-center space-y-2">
+                <div className="w-6 h-6 rounded-full border-2 border-[#B8F36B] border-t-transparent animate-spin mx-auto" />
+                <p className="text-xs text-[#717171]">
+                  Retrieving web sources and synthesizing evidence-grounded answer...
                 </p>
-
-                {/* Key Metrics Callout Mosaic */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  <div className="p-4 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5]/60 flex flex-col justify-between">
-                    <span className="text-xs text-[#717171] font-medium">Projected displacement</span>
-                    <span className="text-2xl font-bold text-[#191919] pt-1">85M</span>
-                    <span className="text-[11px] text-[#717171] pt-0.5">Routine roles displaced by 2028</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5]/60 flex flex-col justify-between">
-                    <span className="text-xs text-[#717171] font-medium">Net Job Creation</span>
-                    <span className="text-2xl font-bold text-[#416900] pt-1">+97M</span>
-                    <span className="text-[11px] text-[#717171] pt-0.5">Specialized tech & green roles</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5]/60 flex flex-col justify-between">
-                    <span className="text-xs text-[#717171] font-medium">Work Hours Automated</span>
-                    <span className="text-2xl font-bold text-[#191919] pt-1">30%</span>
-                    <span className="text-[11px] text-[#717171] pt-0.5">Current tasks shifted to AI agents</span>
+              </div>
+            ) : activeSources.length > 0 ? (
+              <div className="space-y-3">
+                <div className="p-4 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5] space-y-2">
+                  <h3 className="text-sm font-semibold text-[#191919]">
+                    Web Evidence Retrieved ({activeSources.length} sources)
+                  </h3>
+                  <p className="text-xs text-[#717171] leading-relaxed">
+                    Authoritative sources have been compiled for this topic. Configure your Google Gemini API key or click below to synthesize a grounded, fully cited answer.
+                  </p>
+                  <div className="pt-2 flex flex-wrap items-center gap-2">
+                    {hasGeminiKey ? (
+                      <button
+                        type="button"
+                        onClick={() => executeLiveResearch(currentQuery)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Synthesize Grounded Answer</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onNavigate?.('settings-providers')}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                      >
+                        <Key className="w-3.5 h-3.5" />
+                        <span>Configure Gemini Key in Settings</span>
+                      </button>
+                    )}
                   </div>
                 </div>
+              </div>
+            ) : (
+              <div className="p-6 rounded-xl bg-[#F6F3F2]/60 border border-[#E8E8E5] text-center space-y-3">
+                <Search className="w-8 h-8 text-[#9E9E99] mx-auto" />
+                <div className="space-y-1">
+                  <h3 className="text-sm font-semibold text-[#191919]">
+                    {currentQuery ? `Ready to research "${currentQuery}"` : 'No active research session'}
+                  </h3>
+                  <p className="text-xs text-[#717171] max-w-md mx-auto">
+                    {currentQuery
+                      ? 'Fetch live web sources or synthesize a grounded answer using the controls below.'
+                      : 'Enter a question or topic in the composer below to begin a live investigation.'}
+                  </p>
+                </div>
+                {currentQuery && (
+                  <div className="flex items-center justify-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleFetchWebSourcesOnly}
+                      className="px-3.5 py-1.5 rounded-xl bg-white text-[#191919] text-xs font-medium border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
+                    >
+                      Fetch Web Sources
+                    </button>
+                    {hasGeminiKey && (
+                      <button
+                        type="button"
+                        onClick={() => executeLiveResearch(currentQuery)}
+                        className="px-3.5 py-1.5 rounded-xl bg-[#B8F36B] text-[#102000] text-xs font-semibold hover:bg-[#A7EB50] transition-colors cursor-pointer shadow-2xs"
+                      >
+                        Synthesize Answer
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </section>
-
-          {/* Structured Key Impacts Breakdown (when in baseline mode) */}
-          {!synthesizedResult && (
-            <section className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E8E8E5] shadow-xs space-y-5">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-[#191919]">Key Impacts on Jobs</h2>
-                <span className="text-xs text-[#717171]">4 Critical Vector Insights</span>
-              </div>
-
-              <div className="space-y-4">
-                {/* Item 1 */}
-                <div className="p-4 rounded-xl bg-[#F6F3F2]/60 border border-[#E8E8E5]/60 hover:bg-[#F6F3F2] transition-colors space-y-2">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E0E5D3] text-[#181D13] font-bold text-xs shrink-0">
-                        1
-                      </span>
-                      <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
-                        Automation of Routine & Structured Tasks
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => scrollToCitation(1)}
-                        className="w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] font-mono text-[10px] font-bold flex items-center justify-center hover:bg-[#A7EB50] cursor-pointer"
-                      >
-                        1
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => scrollToCitation(2)}
-                        className="w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] font-mono text-[10px] font-bold flex items-center justify-center hover:bg-[#A7EB50] cursor-pointer"
-                      >
-                        2
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-xs sm:text-sm text-[#434938] pl-8.5 leading-relaxed">
-                    Repetitive data collection, back-office bookkeeping, standard transactional customer queries, and baseline legal document drafting will face near-total algorithmic automation. Workers in administrative and entry-level compliance pipelines are transitioning toward auditing, pipeline quality assurance, and anomaly resolution.
-                  </p>
-                </div>
-
-                {/* Item 2 */}
-                <div className="p-4 rounded-xl bg-[#F6F3F2]/60 border border-[#E8E8E5]/60 hover:bg-[#F6F3F2] transition-colors space-y-2">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E0E5D3] text-[#181D13] font-bold text-xs shrink-0">
-                        2
-                      </span>
-                      <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
-                        Proliferation of Novel & Hybrid Roles
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => scrollToCitation(3)}
-                        className="w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] font-mono text-[10px] font-bold flex items-center justify-center hover:bg-[#A7EB50] cursor-pointer"
-                      >
-                        3
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => scrollToCitation(4)}
-                        className="w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] font-mono text-[10px] font-bold flex items-center justify-center hover:bg-[#A7EB50] cursor-pointer"
-                      >
-                        4
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-xs sm:text-sm text-[#434938] pl-8.5 leading-relaxed">
-                    Rapid integration is giving birth to unprecedented titles: AI Workflow Orchestrators, Algorithmic Safety Auditors, Synthetic Data Curators, and Autonomous Agent Managers. Cross-disciplinary professionals possessing both domain mastery and generative intuition are commanding high wage premiums.
-                  </p>
-                </div>
-
-                {/* Item 3 */}
-                <div className="p-4 rounded-xl bg-[#F6F3F2]/60 border border-[#E8E8E5]/60 hover:bg-[#F6F3F2] transition-colors space-y-2">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E0E5D3] text-[#181D13] font-bold text-xs shrink-0">
-                        3
-                      </span>
-                      <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
-                        Human-in-the-Loop Value Inflation
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => scrollToCitation(5)}
-                        className="w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] font-mono text-[10px] font-bold flex items-center justify-center hover:bg-[#A7EB50] cursor-pointer"
-                      >
-                        5
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => scrollToCitation(6)}
-                        className="w-5 h-5 rounded-full bg-[#B8F36B] text-[#102000] font-mono text-[10px] font-bold flex items-center justify-center hover:bg-[#A7EB50] cursor-pointer"
-                      >
-                        6
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-xs sm:text-sm text-[#434938] pl-8.5 leading-relaxed">
-                    Capabilities resistant to statistical modeling—empathy, ethical judgment, strategic negotiations, and physical dexterity in unstructured environments—are gaining distinct economic insulation.
-                  </p>
-                </div>
-              </div>
-            </section>
-          )}
 
           {/* Follow-up Research Bar */}
           <div className="sticky bottom-4 z-20">
@@ -1541,14 +1331,18 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
             <p className="text-xs text-[#434938] leading-relaxed">
               {synthesizedResult
                 ? `Synthesized across ${activeSources.length} verified evidence sources using client-side BYOK model execution.`
-                : 'All primary sources converge on net productivity acceleration; disagreement exists mainly around the speed of routine labor reallocation in developing economies.'}
+                : activeSources.length > 0
+                ? `${activeSources.length} web sources retrieved and ready for grounded synthesis.`
+                : 'No evidence retrieved yet. Submit a research query to retrieve web sources and synthesize citations.'}
             </p>
             <div className="pt-1 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#B8F36B]" />
+              <span className={`w-2 h-2 rounded-full ${synthesizedResult ? 'bg-[#B8F36B]' : 'bg-[#D1D5DB]'}`} />
               <span className="text-[11px] font-mono text-[#717171]">
                 {synthesizedResult
                   ? `${synthesizedResult.citations.integrityPercentage}% Grounded Citations (${synthesizedResult.citations.validCitations}/${synthesizedResult.citations.totalCitations} valid pins)`
-                  : 'Baseline Demonstration Data · 100% Citation Grounding'}
+                  : activeSources.length > 0
+                  ? `${activeSources.length} Sources Ready`
+                  : 'Awaiting Research'}
               </span>
             </div>
           </div>

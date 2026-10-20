@@ -12,7 +12,7 @@ import { conversationService } from './services/conversation/conversationService
 
 function AppContent() {
   const [currentRoute, setCurrentRoute] = useState<NavRoute>('home');
-  const [activeResearchId, setActiveResearchId] = useState<string>('ai-jobs-impact');
+  const [activeResearchId, setActiveResearchId] = useState<string>('');
   const [currentQuery, setCurrentQuery] = useState<string>('');
   const [currentModel, setCurrentModel] = useState<string>('');
 

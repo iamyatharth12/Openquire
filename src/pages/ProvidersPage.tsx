@@ -26,7 +26,6 @@ import {
 import { useBYOK } from '../hooks/useBYOK';
 import { useAuth } from '../context/AuthContext';
 import { AVAILABLE_INTERESTS, InterestCategory } from '../services/profile/profileService';
-import { DevPlaceholderBadge } from '../components/common/UIPrimitives';
 import { openAiPlannedAdapter, anthropicPlannedAdapter, openRouterPlannedAdapter } from '../services/providers/plannedAdapters';
 
 export const ProvidersPage: React.FC = () => {
@@ -117,9 +116,6 @@ export const ProvidersPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      {/* Scope Badge */}
-      <DevPlaceholderBadge label="Openquire BYOK Engine & Local Security Vault (Phase 2 Active)" />
-
       {/* Top Metadata / Breadcrumb & Title */}
       <div className="space-y-1">
         <div className="flex items-center gap-1.5 text-xs text-[#717171]">
@@ -388,7 +384,7 @@ export const ProvidersPage: React.FC = () => {
       {/* Provider Cards Container */}
       <div className="space-y-4">
         {/* ============================================================ */}
-        {/* 1. GOOGLE GEMINI (FULLY FUNCTIONAL IN PHASE 2) */}
+        {/* 1. GOOGLE GEMINI (ACTIVE) */}
         {/* ============================================================ */}
         <article className="bg-white rounded-2xl p-5 sm:p-6 border border-[#E8E8E5] shadow-xs space-y-4 hover:shadow-md transition-all">
           <div className="flex flex-col gap-4">
@@ -646,15 +642,15 @@ export const ProvidersPage: React.FC = () => {
         </article>
 
         {/* ============================================================ */}
-        {/* 2. PLANNED INTEGRATIONS: OPENAI, ANTHROPIC, OPENROUTER */}
+        {/* 2. UPCOMING INTEGRATIONS: OPENAI, ANTHROPIC, OPENROUTER */}
         {/* ============================================================ */}
         <div className="space-y-3 pt-2">
           <div className="flex items-center justify-between pb-1">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-[#717171]">
-              Planned Provider Integrations (Phase 3)
+              Upcoming Provider Integrations
             </h3>
             <span className="text-[11px] font-mono text-[#9E9E99]">
-              Google Gemini is active in Phase 2
+              Google Gemini is currently active
             </span>
           </div>
 
@@ -672,7 +668,7 @@ export const ProvidersPage: React.FC = () => {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-sm font-semibold text-[#191919]">{item.metadata.name}</h4>
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F1F2ED] text-[#717171] text-[11px] font-mono">
-                        <span>Phase 3 Integration</span>
+                        <span>In Development</span>
                       </span>
                     </div>
                     <p className="text-xs text-[#717171] mt-0.5">{item.metadata.tagline}</p>
@@ -684,7 +680,7 @@ export const ProvidersPage: React.FC = () => {
                     type="button"
                     onClick={() =>
                       setPlannedNotice(
-                        `${item.metadata.name} integration will be implemented in Phase 3. Please configure Google Gemini for current active usage.`
+                        `${item.metadata.name} integration is currently in development. Please configure Google Gemini for active usage.`
                       )
                     }
                     className="px-3 py-1.5 rounded-xl bg-[#F6F3F2] hover:bg-[#EAEBE4] text-[#191919] text-xs font-medium border border-[#E8E8E5] transition-colors"

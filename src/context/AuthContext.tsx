@@ -56,6 +56,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const isConfigured = authService.isConfigured();
 
+  const profileRef = React.useRef<UserProfile | null>(profile);
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
+
   // Load and ensure user profile
   const loadProfile = useCallback(async (currentUser: User) => {
     setIsLoadingProfile(true);
@@ -213,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setAuthModalOpen(true);
         } else if (event === 'TOKEN_REFRESHED' && newUser) {
           // Keep profile in sync
-          if (!profile) {
+          if (!profileRef.current) {
             await loadProfile(newUser);
           }
         }
@@ -225,7 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription.unsubscribe();
       };
     }
-  }, [refreshSession, loadProfile, profile]);
+  }, [refreshSession, loadProfile]);
 
   const openAuthModal = useCallback((mode: AuthModalMode = 'sign_in') => {
     setAuthModalMode(mode);

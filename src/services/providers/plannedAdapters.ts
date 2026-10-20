@@ -15,8 +15,8 @@ export class PlannedProviderAdapter implements IProviderAdapter {
       models: [],
       error: {
         code: 'SERVICE_UNAVAILABLE',
-        message: `${this.metadata.name} integration is scheduled for Phase 3.`,
-        suggestedAction: 'Please use Google Gemini, which is currently fully functional in Phase 2.',
+        message: `${this.metadata.name} integration is currently in development.`,
+        suggestedAction: 'Please configure Google Gemini, which is active and fully supported.',
       },
     };
   }
@@ -29,7 +29,7 @@ export class PlannedProviderAdapter implements IProviderAdapter {
     return {
       code: 'UNKNOWN',
       message: `${this.metadata.name} adapter is not yet active.`,
-      suggestedAction: 'Use Google Gemini during Phase 2.',
+      suggestedAction: 'Please configure Google Gemini for active research.',
     };
   }
 }
@@ -37,7 +37,7 @@ export class PlannedProviderAdapter implements IProviderAdapter {
 export const openAiPlannedAdapter = new PlannedProviderAdapter({
   id: 'openai',
   name: 'OpenAI',
-  tagline: 'GPT-4o, GPT-4o mini, o3-mini (Planned for Phase 3)',
+  tagline: 'GPT-4o, GPT-4o mini, o3-mini (In Development)',
   docsUrl: 'https://platform.openai.com/api-keys',
   keyPlaceholder: 'sk-proj-...',
   isImplemented: false,
@@ -47,28 +47,28 @@ export const openAiPlannedAdapter = new PlannedProviderAdapter({
     { id: 'gpt-4o-mini', name: 'GPT-4o mini', description: 'Fast, lightweight model' },
     { id: 'o3-mini', name: 'o3-mini', description: 'High-reasoning science model' },
   ],
-  securityNote: 'Planned Phase 3 integration via stateless client proxy.',
+  securityNote: 'Upcoming direct client proxy integration.',
 });
 
 export const anthropicPlannedAdapter = new PlannedProviderAdapter({
   id: 'anthropic',
   name: 'Anthropic',
-  tagline: 'Claude 3.5 Sonnet, Claude 3.5 Haiku (Planned for Phase 3)',
+  tagline: 'Claude 3.5 Sonnet, Claude 3.5 Haiku (In Development)',
   docsUrl: 'https://console.anthropic.com/settings/keys',
   keyPlaceholder: 'sk-ant-api03-...',
   isImplemented: false,
-  requiresRelay: true, // Anthropic enforces non-browser origin policies
+  requiresRelay: true,
   supportedModels: [
     { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet', description: 'State of the art reasoning' },
     { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku', description: 'Ultra-fast intelligence' },
   ],
-  securityNote: 'Requires stateless server-side relay due to Anthropic browser CORS restrictions.',
+  securityNote: 'Requires stateless server relay due to browser origin restrictions.',
 });
 
 export const openRouterPlannedAdapter = new PlannedProviderAdapter({
   id: 'openrouter',
   name: 'OpenRouter',
-  tagline: 'DeepSeek R1, Llama 3.3, Mistral Large (Planned for Phase 3)',
+  tagline: 'DeepSeek R1, Llama 3.3, Mistral Large (In Development)',
   docsUrl: 'https://openrouter.ai/keys',
   keyPlaceholder: 'sk-or-v1-...',
   isImplemented: false,
@@ -77,5 +77,5 @@ export const openRouterPlannedAdapter = new PlannedProviderAdapter({
     { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1', description: 'Open-weights reasoning' },
     { id: 'meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B', description: 'Open foundation model' },
   ],
-  securityNote: 'Planned Phase 3 integration.',
+  securityNote: 'Upcoming multi-provider aggregator integration.',
 });

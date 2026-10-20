@@ -46,9 +46,18 @@ describe('@supabase/server & Supabase Auth Verification', () => {
       },
     });
 
+    const origSecret = process.env.SUPABASE_SECRET_KEY;
+    if (!process.env.SUPABASE_SECRET_KEY) {
+      process.env.SUPABASE_SECRET_KEY = 'sb_secret_mock_for_server_context_0000';
+    }
+
     const { data, error } = await createSupabaseContext(req, {
       auth: 'publishable',
     });
+
+    if (origSecret === undefined) {
+      delete process.env.SUPABASE_SECRET_KEY;
+    }
 
     if (process.env.SUPABASE_PUBLISHABLE_KEY) {
       assert.strictEqual(error, null);

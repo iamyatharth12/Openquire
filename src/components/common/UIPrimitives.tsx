@@ -94,7 +94,7 @@ export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 
 // Explicit Development Placeholder Banner
 export const DevPlaceholderBadge: React.FC<{ label?: string }> = ({
-  label = 'Design Reference & Development Placeholder (Phase 1)',
+  label = 'Openquire Notice',
 }) => {
   return (
     <div className="flex items-center gap-1.5 px-3 py-1 bg-[#F1F2ED] text-[#717171] border border-[#E8E8E5] rounded-md text-[11px] font-mono tracking-wide">

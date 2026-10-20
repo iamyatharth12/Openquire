@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { Logo } from '../components/common/Logo';
 import { ResearchMode, NavRoute } from '../types/navigation';
-import { DevPlaceholderBadge } from '../components/common/UIPrimitives';
 import { useModelSelection } from '../hooks/useModelSelection';
 import { ComposerModelSelector } from '../components/research/ComposerModelSelector';
 import { useConversations } from '../hooks/useConversations';
@@ -70,11 +69,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onStartResearch, onNavigate,
 
       {/* Main Editorial Canvas */}
       <div className="w-full max-w-[760px] mx-auto flex flex-col items-center">
-        {/* Development notice badge */}
-        <div className="mb-6">
-          <DevPlaceholderBadge label="Openquire Shell & Design System (Phase 1)" />
-        </div>
-
         {/* Brand Header Group */}
         <div className="flex flex-col items-center text-center space-y-2 mb-7">
           <Logo size="lg" showWordmark={true} showTagline={true} />

@@ -14,7 +14,6 @@ import {
   User as UserIcon,
   ShieldCheck,
 } from 'lucide-react';
-import { DevPlaceholderBadge } from '../components/common/UIPrimitives';
 import { useConversations } from '../hooks/useConversations';
 import { useAuth } from '../context/AuthContext';
 
@@ -47,9 +46,6 @@ export const LibraryPage: React.FC<LibraryPageProps> = ({ onOpenItem }) => {
 
   return (
     <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      {/* Scope Badge */}
-      <DevPlaceholderBadge label="Openquire Library & Research History" />
-
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -118,11 +114,17 @@ export const LibraryPage: React.FC<LibraryPageProps> = ({ onOpenItem }) => {
       {/* Items List */}
       <div className="space-y-3">
         {filteredItems.length === 0 ? (
-          <div className="bg-white border border-[#E8E8E5] rounded-2xl p-10 text-center space-y-2 shadow-2xs">
+          <div className="bg-white border border-[#E8E8E5] rounded-2xl p-10 text-center space-y-2.5 shadow-2xs">
             <Bookmark className="w-8 h-8 text-[#9E9E99] mx-auto" />
-            <h3 className="text-sm font-semibold text-[#191919]">No research sessions found</h3>
-            <p className="text-xs text-[#717171]">
-              Try adjusting your search terms or filter mode.
+            <h3 className="text-sm font-semibold text-[#191919]">
+              {conversations.length === 0
+                ? 'No research sessions yet'
+                : 'No matching research sessions'}
+            </h3>
+            <p className="text-xs text-[#717171] max-w-sm mx-auto">
+              {conversations.length === 0
+                ? 'Start your first research session from the home console to explore topics and ground answers in web evidence.'
+                : 'Try adjusting your search terms or filter mode to find past investigations.'}
             </p>
           </div>
         ) : (

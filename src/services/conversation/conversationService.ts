@@ -14,82 +14,15 @@ const ACTIVE_CONVERSATION_KEY = 'openquire_active_conversation_id';
 
 export const CONVERSATION_CHANGE_EVENT = 'openquire_conversation_changed';
 
-// Default canonical conversations to seed if storage is empty
-const INITIAL_CONVERSATIONS: Conversation[] = [
-  {
-    id: 'ai-jobs-impact',
-    title: 'How will AI impact jobs in the next decade?',
-    mode: 'web',
-    createdAt: Date.now() - 7200000, // 2 hours ago
-    updatedAt: Date.now() - 7200000,
-    modelId: 'gemini-2.5-flash',
-    providerId: 'gemini',
-    initialQuery: 'How will AI impact jobs in the next decade?',
-    messages: [
-      {
-        id: 'msg-user-1',
-        role: 'user',
-        content: 'How will AI impact jobs in the next decade?',
-        timestamp: Date.now() - 7200000,
-      },
-      {
-        id: 'msg-assistant-1',
-        role: 'assistant',
-        content:
-          '### Executive Summary\nGenerative AI and autonomous agentic workflows are accelerating workplace transitions. Rather than widespread mass unemployment, evidence demonstrates a profound restructuring of job tasks [1][2], prioritizing cross-disciplinary coordination, strategic synthesis, and human-in-the-loop oversight [3].\n\n### Key Insights\n1. **Routine Cognitive Task Compression**: Administrative documentation, rudimentary coding, and standard analytical summaries are experiencing dramatic productivity gains [1].\n2. **Emergence of Hybrid Roles**: High wage premiums are concentrating around professionals who combine traditional domain expertise with generative AI orchestration [2][4].\n3. **Resilience of Tacit Human Skills**: Empathy, high-stakes negotiation, physical dexterity in unstructured spaces, and nuanced ethical governance remain distinctly insulated [5][6].',
-        timestamp: Date.now() - 7180000,
-        providerId: 'Google Gemini',
-        modelId: 'gemini-2.5-flash',
-        executionTimeMs: 1420,
-        status: 'completed',
-      },
-    ],
-  },
-  {
-    id: 'renewable-energy-future',
-    title: 'The future of renewable energy innovations',
-    mode: 'deep',
-    createdAt: Date.now() - 86400000, // 1 day ago
-    updatedAt: Date.now() - 86400000,
-    modelId: 'gemini-2.5-flash',
-    providerId: 'gemini',
-    initialQuery: 'The future of renewable energy innovations',
-    messages: [
-      {
-        id: 'msg-user-2',
-        role: 'user',
-        content: 'The future of renewable energy innovations',
-        timestamp: Date.now() - 86400000,
-      },
-      {
-        id: 'msg-assistant-2',
-        role: 'assistant',
-        content:
-          '### Executive Summary\nBreakthroughs in perovskite tandem photovoltaics, grid-scale iron-air long-duration batteries, and floating offshore wind platforms are driving clean electricity costs below fossil-fuel baselines across major international energy grids [1][2].',
-        timestamp: Date.now() - 86380000,
-        providerId: 'Google Gemini',
-        modelId: 'gemini-2.5-flash',
-        executionTimeMs: 2310,
-        status: 'completed',
-      },
-    ],
-  },
-];
-
 class ConversationService implements IConversationStorage {
   private dbPromise: Promise<IDBDatabase> | null = null;
   // Memory store for non-browser/test environments
   private memoryConversations = new Map<string, Conversation>();
-  private activeIdInMemory: string | null = 'ai-jobs-impact';
+  private activeIdInMemory: string | null = null;
   private isInitialized = false;
   private currentUserId: string | null = null;
 
-  constructor() {
-    // Pre-populate memory store with initial items
-    INITIAL_CONVERSATIONS.forEach((c) => {
-      this.memoryConversations.set(c.id, { ...c });
-    });
-  }
+  constructor() {}
 
   setCurrentUserId(userId: string | null): void {
     const changed = this.currentUserId !== userId;
@@ -153,28 +86,24 @@ class ConversationService implements IConversationStorage {
 
     try {
       const db = await this.getDB();
-      const count = await new Promise<number>((resolve, reject) => {
-        const tx = db.transaction(STORE_CONVERSATIONS, 'readonly');
-        const store = tx.objectStore(STORE_CONVERSATIONS);
-        const req = store.count();
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
+      // Purge any legacy synthetic demo conversations from previously initialized stores
+      const tx = db.transaction(STORE_CONVERSATIONS, 'readwrite');
+      const store = tx.objectStore(STORE_CONVERSATIONS);
+      store.delete('ai-jobs-impact');
+      store.delete('renewable-energy-future');
+      await new Promise<void>((resolve, reject) => {
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
       });
 
-      if (count === 0) {
-        // Seed default items
-        const tx = db.transaction(STORE_CONVERSATIONS, 'readwrite');
-        const store = tx.objectStore(STORE_CONVERSATIONS);
-        for (const item of INITIAL_CONVERSATIONS) {
-          store.put(item);
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const active = localStorage.getItem(ACTIVE_CONVERSATION_KEY);
+        if (active === 'ai-jobs-impact' || active === 'renewable-energy-future') {
+          localStorage.removeItem(ACTIVE_CONVERSATION_KEY);
         }
-        await new Promise<void>((resolve, reject) => {
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
       }
     } catch (err) {
-      console.warn('Failed to seed initial conversations:', err);
+      console.warn('Initialization cleanup check failed:', err);
     }
   }
 
@@ -196,13 +125,8 @@ class ConversationService implements IConversationStorage {
 
     const filterByUser = (items: Conversation[]) => {
       if (this.currentUserId) {
-        // Return only conversations owned by this user.
-        // If this user has no conversations yet, show initial templates so they have context.
-        const own = items.filter((c) => c.userId === this.currentUserId);
-        if (own.length > 0) return own;
-        return items.filter((c) => !c.userId);
+        return items.filter((c) => c.userId === this.currentUserId);
       }
-      // Guest mode: only unowned conversations (never leak another user's conversations)
       return items.filter((c) => !c.userId);
     };
 
@@ -463,7 +387,7 @@ class ConversationService implements IConversationStorage {
     if (!this.isBrowserSupported()) {
       return this.activeIdInMemory;
     }
-    return localStorage.getItem(ACTIVE_CONVERSATION_KEY) || 'ai-jobs-impact';
+    return localStorage.getItem(ACTIVE_CONVERSATION_KEY) || null;
   }
 
   async setActiveConversationId(id: string): Promise<void> {

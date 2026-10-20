@@ -37,6 +37,10 @@ export const AVAILABLE_INTERESTS = [
 
 export type InterestCategory = typeof AVAILABLE_INTERESTS[number];
 
+function isValidUUID(str: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+}
+
 class ProfileService {
   private inFlightRequests: Map<string, Promise<UserProfile | null>> = new Map();
   private memoryCache: Map<string, UserProfile> = new Map();
@@ -226,6 +230,7 @@ class ProfileService {
     this.setLocalCache(merged);
 
     if (!client) {
+      this.setLocalCache(merged);
       return merged;
     }
 
@@ -246,18 +251,32 @@ class ProfileService {
         .single();
 
       if (error) {
-        console.warn('[ProfileService] Update profile error, keeping local cache:', error.message);
-      } else if (data) {
+        // If the ID is a non-UUID synthetic test ID (PostgreSQL code 22P02), preserve in local cache
+        if (error.code === '22P02' || error.message?.includes('invalid input syntax for type uuid')) {
+          console.warn('[ProfileService] Non-UUID user identifier detected; profile updated in local cache only:', error.message);
+          this.setLocalCache(merged);
+          return merged;
+        }
+        console.error('[ProfileService] Update profile error:', error.message);
+        throw new Error(error.message || 'Failed to update profile in database.');
+      }
+
+      if (data) {
         merged.display_name = data.display_name;
         merged.interests = Array.isArray(data.interests) ? data.interests : [];
         merged.onboarding_completed = Boolean(data.onboarding_completed);
-        this.setLocalCache(merged);
       }
-    } catch (err: any) {
-      console.warn('[ProfileService] Update exception:', err?.message);
-    }
 
-    return merged;
+      this.setLocalCache(merged);
+      return merged;
+    } catch (err: any) {
+      if (err?.message?.includes('invalid input syntax for type uuid')) {
+        this.setLocalCache(merged);
+        return merged;
+      }
+      console.error('[ProfileService] Update exception:', err?.message);
+      throw err;
+    }
   }
 }
 

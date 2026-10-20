@@ -65,16 +65,26 @@ export const AuthModal: React.FC = () => {
   const [showSqlMigration, setShowSqlMigration] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
 
+  const hasUserEditedAuthProfileNameRef = React.useRef(false);
+  const hasUserEditedAuthProfileInterestsRef = React.useRef(false);
+
   useEffect(() => {
-    if (profile) {
-      setPreferredName(profile.display_name || '');
-      setSelectedInterests(profile.interests || []);
-    } else if (user) {
-      const initial = user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : '');
-      setPreferredName(initial);
-      setSelectedInterests([]);
+    if (authModalMode === 'profile' && authModalOpen) {
+      if (!hasUserEditedAuthProfileNameRef.current) {
+        setPreferredName(
+          profile?.display_name ||
+          user?.user_metadata?.full_name ||
+          (user?.email ? user.email.split('@')[0] : '')
+        );
+      }
+      if (!hasUserEditedAuthProfileInterestsRef.current) {
+        setSelectedInterests(Array.isArray(profile?.interests) ? profile.interests : []);
+      }
+    } else {
+      hasUserEditedAuthProfileNameRef.current = false;
+      hasUserEditedAuthProfileInterestsRef.current = false;
     }
-  }, [profile, user, authModalMode]);
+  }, [profile, user, authModalMode, authModalOpen]);
 
   if (!authModalOpen) return null;
 
@@ -226,6 +236,7 @@ export const AuthModal: React.FC = () => {
   };
 
   const toggleInterest = (interest: InterestCategory) => {
+    hasUserEditedAuthProfileInterestsRef.current = true;
     setSelectedInterests((prev) =>
       prev.includes(interest) ? prev.filter((i) => i !== interest) : [...prev, interest]
     );
@@ -409,7 +420,10 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                       id="settings-preferred-name"
                       type="text"
                       value={preferredName}
-                      onChange={(e) => setPreferredName(e.target.value)}
+                      onChange={(e) => {
+                        hasUserEditedAuthProfileNameRef.current = true;
+                        setPreferredName(e.target.value);
+                      }}
                       placeholder="e.g. Eleanor, Dr. Smith, Alex"
                       className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl px-3.5 py-2.5 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
                     />
