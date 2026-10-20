@@ -1,0 +1,6 @@
+{
+  "name": "Openquire",
+  "description": "AI-powered web research and answer engine with source-grounded synthesis, deep research investigation, and client-side BYOK privacy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
