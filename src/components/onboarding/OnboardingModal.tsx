@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Check, Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { AVAILABLE_INTERESTS, InterestCategory } from '../../services/profile/profileService';
+import { AVAILABLE_INTERESTS } from '../../services/profile/profileService';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -9,66 +9,53 @@ interface OnboardingModalProps {
   onComplete: () => void;
 }
 
-export const OnboardingModal: React.FC<OnboardingModalProps> = ({
-  isOpen,
+interface OnboardingModalContentProps {
+  onClose: () => void;
+  onComplete: () => void;
+}
+
+const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
   onClose,
   onComplete,
 }) => {
   const { user, profile, updateProfile } = useAuth();
 
-  const [displayName, setDisplayName] = useState('');
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  // Initialize display name from profile, Google user metadata, or email prefix
+  const initialName =
+    profile?.display_name ||
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    (user?.email ? user.email.split('@')[0] : '');
+
+  // Initialize interests from profile if already set
+  const initialInterests = Array.isArray(profile?.interests) ? profile.interests : [];
+
+  const [displayName, setDisplayName] = useState<string>(initialName);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>(initialInterests);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Synchronization refs to prevent re-renders or background queries from clobbering user edits
-  const hasInitializedRef = useRef(false);
+  // Track if user has explicitly interacted to prevent background sync from overwriting typed input
   const hasUserEditedNameRef = useRef(false);
   const hasUserEditedInterestsRef = useRef(false);
 
-  // Initialize fields once when the modal is opened
+  // If profile data arrives after mount and the field is still empty and unedited, populate it gracefully
   useEffect(() => {
-    if (isOpen) {
-      if (!hasInitializedRef.current) {
-        const initialName =
-          profile?.display_name ||
-          user?.user_metadata?.full_name ||
-          user?.user_metadata?.name ||
-          (user?.email ? user.email.split('@')[0] : '');
-
-        if (!hasUserEditedNameRef.current) {
-          setDisplayName(initialName);
-        }
-        if (!hasUserEditedInterestsRef.current) {
-          setSelectedInterests(Array.isArray(profile?.interests) ? profile.interests : []);
-        }
-        setErrorMessage(null);
-        hasInitializedRef.current = true;
-      } else {
-        // Modal was already open: only update if field was completely blank and user hasn't typed
-        if (!hasUserEditedNameRef.current && !displayName && profile?.display_name) {
-          setDisplayName(profile.display_name);
-        }
-        if (
-          !hasUserEditedInterestsRef.current &&
-          selectedInterests.length === 0 &&
-          Array.isArray(profile?.interests) &&
-          profile.interests.length > 0
-        ) {
-          setSelectedInterests(profile.interests);
-        }
-      }
-    } else {
-      // Reset synchronization state when modal closes
-      hasInitializedRef.current = false;
-      hasUserEditedNameRef.current = false;
-      hasUserEditedInterestsRef.current = false;
-      setErrorMessage(null);
-      setLoading(false);
+    if (!hasUserEditedNameRef.current && !displayName && profile?.display_name) {
+      setDisplayName(profile.display_name);
     }
-  }, [isOpen, profile, user]);
+  }, [profile?.display_name, displayName]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (
+      !hasUserEditedInterestsRef.current &&
+      selectedInterests.length === 0 &&
+      Array.isArray(profile?.interests) &&
+      profile.interests.length > 0
+    ) {
+      setSelectedInterests(profile.interests);
+    }
+  }, [profile?.interests, selectedInterests.length]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     hasUserEditedNameRef.current = true;
@@ -118,18 +105,29 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   const handleSkip = async () => {
     const trimmedName = displayName.trim();
-    // If the user already provided a preferred name, persist it so their typed name is not discarded
-    if (trimmedName) {
-      try {
-        await updateProfile({
-          display_name: trimmedName,
-          interests: selectedInterests,
-        });
-      } catch {
-        // Do not block skip if saving fails
-      }
+    if (!trimmedName) {
+      setErrorMessage('Please enter your preferred name.');
+      return;
     }
-    onClose();
+
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      await updateProfile({
+        display_name: trimmedName,
+        interests: selectedInterests,
+        // Optional interests skipped; preserve required name and complete onboarding
+        onboarding_completed: true,
+      });
+      onComplete();
+    } catch (err: any) {
+      console.error('[OnboardingModal] Failed to save preferences on skip:', err);
+      // Non-blocking fallback to close
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -180,6 +178,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             </label>
             <input
               id="preferred-name-input"
+              name="displayName"
               type="text"
               required
               autoFocus
@@ -227,9 +226,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                     }`}
                   >
                     {isSelected && (
-                      <Check className="w-3 h-3 stroke-[2.5] shrink-0 pointer-events-none text-[#B8F36B]" />
+                      <Check className="w-3 h-3 stroke-[2.5] shrink-0 text-[#B8F36B]" />
                     )}
-                    <span className="pointer-events-none">{interest}</span>
+                    <span>{interest}</span>
                   </button>
                 );
               })}
@@ -268,5 +267,20 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </form>
       </div>
     </div>
+  );
+};
+
+export const OnboardingModal: React.FC<OnboardingModalProps> = ({
+  isOpen,
+  onClose,
+  onComplete,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <OnboardingModalContent
+      onClose={onClose}
+      onComplete={onComplete}
+    />
   );
 };
