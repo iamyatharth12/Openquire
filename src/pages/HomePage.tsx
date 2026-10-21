@@ -51,7 +51,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onStartResearch, onNavigate,
       textareaRef.current?.focus();
       return;
     }
-    onStartResearch(query.trim(), selectedMode, selectedModel);
+    onStartResearch(query.trim(), selectedMode, selectedModel || 'gemini-2.5-flash');
   };
 
   const exampleQueries = [

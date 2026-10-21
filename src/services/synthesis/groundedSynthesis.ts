@@ -83,9 +83,7 @@ export class GroundedSynthesisEngine {
         '';
     }
     if (!requestedModel) {
-      throw new Error(
-        'NO_MODEL_CONFIGURED: No synthesis model is selected. Please select an available model in Settings or the composer.'
-      );
+      requestedModel = 'gemini-2.5-flash';
     }
 
     // 2. Stage 1: Real Web Search
@@ -190,11 +188,13 @@ MANDATORY CITATION RULES:
 
     const userPrompt = `User Research Query: "${trimmed}"\n\nVerified Evidence Sources:\n${evidenceText}\n\nPlease generate the grounded research answer following all citation rules.`;
 
-    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}:generateContent`;
+    const cleanKey = geminiKey.trim();
+    const encodedModel = encodeURIComponent(requestedModel);
+    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent?key=${encodeURIComponent(cleanKey)}`;
     const genRes = await fetch(geminiEndpoint, {
       method: 'POST',
       headers: {
-        'x-goog-api-key': geminiKey.trim(),
+        'x-goog-api-key': cleanKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -216,6 +216,18 @@ MANDATORY CITATION RULES:
       if (genRes.status === 404) {
         throw new Error(
           `MODEL_NOT_FOUND (${requestedModel}): The model "${requestedModel}" was not found or is not available for this API key. Please select a valid model from the composer or Settings.`
+        );
+      }
+      if (genRes.status === 400 || genRes.status === 401 || genRes.status === 403) {
+        if (msg.toLowerCase().includes('key') || msg.toLowerCase().includes('credential') || msg.toLowerCase().includes('unregistered')) {
+          throw new Error(
+            `INVALID_KEY: The Google Gemini API key is invalid or unauthorized. Please verify or update your key in Settings.`
+          );
+        }
+      }
+      if (genRes.status === 429) {
+        throw new Error(
+          `QUOTA_EXCEEDED: Gemini API rate limit or quota exceeded for this model. Please wait a moment or try another model.`
         );
       }
       // NO SILENT SUBSTITUTION: Report exact requested model failure

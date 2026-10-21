@@ -7,15 +7,17 @@ import {
 import { ResearchMode } from '../../types/navigation';
 import { getSupabaseConfig, supabaseClient } from './supabaseClient';
 
-const DB_NAME = 'openquire_vault';
-const DB_VERSION = 2; // Incremented for conversations store
-const STORE_CONVERSATIONS = 'conversations';
+import {
+  getOpenquireVaultDB,
+  isIndexedDBSupported,
+  STORE_CONVERSATIONS,
+} from '../storage/openquireDb';
+
 const ACTIVE_CONVERSATION_KEY = 'openquire_active_conversation_id';
 
 export const CONVERSATION_CHANGE_EVENT = 'openquire_conversation_changed';
 
 class ConversationService implements IConversationStorage {
-  private dbPromise: Promise<IDBDatabase> | null = null;
   // Memory store for non-browser/test environments
   private memoryConversations = new Map<string, Conversation>();
   private activeIdInMemory: string | null = null;
@@ -37,42 +39,11 @@ class ConversationService implements IConversationStorage {
   }
 
   private isBrowserSupported(): boolean {
-    return typeof window !== 'undefined' && typeof indexedDB !== 'undefined';
+    return isIndexedDBSupported();
   }
 
   private async getDB(): Promise<IDBDatabase> {
-    if (!this.isBrowserSupported()) {
-      throw new Error('IndexedDB not supported in this runtime environment');
-    }
-
-    if (this.dbPromise) {
-      return this.dbPromise;
-    }
-
-    this.dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains('credentials')) {
-          db.createObjectStore('credentials', { keyPath: 'providerId' });
-        }
-        if (!db.objectStoreNames.contains('preferences')) {
-          db.createObjectStore('preferences', { keyPath: 'providerId' });
-        }
-        if (!db.objectStoreNames.contains(STORE_CONVERSATIONS)) {
-          db.createObjectStore(STORE_CONVERSATIONS, { keyPath: 'id' });
-        }
-      };
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => {
-        this.dbPromise = null;
-        reject(request.error || new Error('Failed to open IndexedDB'));
-      };
-    });
-
-    return this.dbPromise;
+    return getOpenquireVaultDB();
   }
 
   /**

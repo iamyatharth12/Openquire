@@ -118,29 +118,29 @@ export const ProvidersPage: React.FC = () => {
     <div className="max-w-4xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6 min-w-0">
       {/* Top Metadata / Breadcrumb & Title */}
       <div className="space-y-1 min-w-0">
-        <div className="flex items-center gap-1.5 text-xs text-[#717171] flex-wrap">
+        <div className="flex items-center gap-1.5 text-xs text-[#717171] dark:text-[#9EA396] flex-wrap">
           <span>Settings</span>
-          <span className="text-[#DFE0DC]">/</span>
-          <span className="text-[#191919] font-medium truncate">
+          <span className="text-[#DFE0DC] dark:text-[#2C3125]">/</span>
+          <span className="text-[#191919] dark:text-[#ECEEE6] font-medium truncate">
             {settingsTab === 'providers' ? 'AI Providers & BYOK Vault' : 'User Profile & Cloud Sync'}
           </span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-semibold text-[#191919] tracking-tight break-words">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[#191919] dark:text-[#ECEEE6] tracking-tight break-words">
               {settingsTab === 'providers' ? 'AI Providers & BYOK Vault' : 'User Profile & Cloud Settings'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#717171] mt-0.5 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#717171] dark:text-[#9EA396] mt-0.5 leading-relaxed">
               {settingsTab === 'providers'
                 ? 'Connect your own AI provider keys. Your keys are verified live and stored strictly in your browser.'
                 : 'Manage your preferred name, research interests, and Supabase cloud persistence.'}
             </p>
           </div>
           {settingsTab === 'providers' ? (
-            <div className="flex items-center gap-2 text-xs font-mono bg-[#E0E5D3] text-[#181D13] px-3 py-1.5 rounded-full self-start sm:self-auto border border-[#C2C9B3] shrink-0">
+            <div className="flex items-center gap-2 text-xs font-mono bg-[#E0E5D3] dark:bg-[#20251A] text-[#181D13] dark:text-[#B8F36B] px-3 py-1.5 rounded-full self-start sm:self-auto border border-[#C2C9B3] dark:border-[#2C3125] shrink-0">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  gemini.status === 'connected' ? 'bg-[#416900] animate-pulse' : 'bg-[#9E9E99]'
+                  gemini.status === 'connected' ? 'bg-[#416900] dark:bg-[#B8F36B] animate-pulse' : 'bg-[#9E9E99] dark:bg-[#6C7262]'
                 }`}
               />
               <span className="font-semibold">
@@ -148,8 +148,8 @@ export const ProvidersPage: React.FC = () => {
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-xs font-mono bg-[#E0E5D3] text-[#181D13] px-3 py-1.5 rounded-full self-start sm:self-auto border border-[#C2C9B3] shrink-0">
-              <Cloud className="w-3.5 h-3.5 text-[#416900]" />
+            <div className="flex items-center gap-2 text-xs font-mono bg-[#E0E5D3] dark:bg-[#20251A] text-[#181D13] dark:text-[#B8F36B] px-3 py-1.5 rounded-full self-start sm:self-auto border border-[#C2C9B3] dark:border-[#2C3125] shrink-0">
+              <Cloud className="w-3.5 h-3.5 text-[#416900] dark:text-[#B8F36B]" />
               <span className="font-semibold">
                 {isAuthenticated ? 'Cloud Synced (PostgreSQL RLS)' : 'Local Storage Mode'}
               </span>
@@ -159,14 +159,14 @@ export const ProvidersPage: React.FC = () => {
       </div>
 
       {/* Settings Navigation Tabs (Scrollable on small viewports) */}
-      <div className="flex items-center gap-2 border-b border-[#E8E8E5] pb-2 overflow-x-auto max-w-full scrollbar-none">
+      <div className="flex items-center gap-2 border-b border-[#E8E8E5] dark:border-[#242A1D] pb-2 overflow-x-auto max-w-full scrollbar-none">
         <button
           type="button"
           onClick={() => setSettingsTab('providers')}
           className={`flex items-center gap-2 px-3.5 py-1.5 min-h-[38px] rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
             settingsTab === 'providers'
-              ? 'bg-[#181D13] text-[#B8F36B] shadow-2xs'
-              : 'text-[#717171] hover:text-[#191919] hover:bg-[#EAEBE4]'
+              ? 'bg-[#181D13] dark:bg-[#B8F36B] text-[#B8F36B] dark:text-[#102000] shadow-2xs'
+              : 'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] hover:bg-[#EAEBE4] dark:hover:bg-[#1E221A]'
           }`}
         >
           <Cpu className="w-3.5 h-3.5" />
@@ -178,8 +178,8 @@ export const ProvidersPage: React.FC = () => {
           onClick={() => setSettingsTab('profile')}
           className={`flex items-center gap-2 px-3.5 py-1.5 min-h-[38px] rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
             settingsTab === 'profile'
-              ? 'bg-[#181D13] text-[#B8F36B] shadow-2xs'
-              : 'text-[#717171] hover:text-[#191919] hover:bg-[#EAEBE4]'
+              ? 'bg-[#181D13] dark:bg-[#B8F36B] text-[#B8F36B] dark:text-[#102000] shadow-2xs'
+              : 'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] hover:bg-[#EAEBE4] dark:hover:bg-[#1E221A]'
           }`}
         >
           <UserIcon className="w-3.5 h-3.5" />
@@ -190,15 +190,15 @@ export const ProvidersPage: React.FC = () => {
       {settingsTab === 'profile' ? (
         <div className="space-y-6">
           {isAuthenticated && user ? (
-            <div className="bg-white rounded-2xl p-6 border border-[#E8E8E5] shadow-xs space-y-6">
+            <div className="bg-white dark:bg-[#151711] rounded-2xl p-6 border border-[#E8E8E5] dark:border-[#242A1D] shadow-xs space-y-6">
               {/* User Identity Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8E8E5]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8E8E5] dark:border-[#242A1D]">
                 <div className="flex items-center gap-3.5">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
                       alt={displayName}
-                      className="w-12 h-12 rounded-full object-cover border border-[#C2C9B3] shrink-0"
+                      className="w-12 h-12 rounded-full object-cover border border-[#C2C9B3] dark:border-[#2C3125] shrink-0"
                     />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-[#B8F36B] text-[#102000] font-bold text-sm flex items-center justify-center shrink-0 border border-[#A7EB50]">
@@ -207,19 +207,19 @@ export const ProvidersPage: React.FC = () => {
                   )}
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-base font-semibold text-[#191919]">{displayName}</h2>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E0E5D3] text-[#416900] uppercase font-semibold">
+                      <h2 className="text-base font-semibold text-[#191919] dark:text-[#ECEEE6]">{displayName}</h2>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E0E5D3] dark:bg-[#20251A] text-[#416900] dark:text-[#B8F36B] uppercase font-semibold">
                         {user.app_metadata?.provider || 'Email'}
                       </span>
                     </div>
-                    <p className="text-xs text-[#717171] mt-0.5">{user.email}</p>
+                    <p className="text-xs text-[#717171] dark:text-[#9EA396] mt-0.5">{user.email}</p>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={signOut}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer self-start sm:self-auto"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold transition-colors cursor-pointer self-start sm:self-auto"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out</span>
@@ -228,13 +228,13 @@ export const ProvidersPage: React.FC = () => {
 
               {/* Feedback messages */}
               {profileErrorMessage && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-2">
                   <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{profileErrorMessage}</span>
                 </div>
               )}
               {profileSuccessMessage && (
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2">
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2">
                   <Check className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{profileSuccessMessage}</span>
                 </div>
@@ -243,7 +243,7 @@ export const ProvidersPage: React.FC = () => {
               {/* Edit form */}
               <form onSubmit={handleSaveProfile} className="space-y-5">
                 <div className="space-y-1.5">
-                  <label htmlFor="pref-name" className="block text-xs font-semibold text-[#191919]">
+                  <label htmlFor="pref-name" className="block text-xs font-semibold text-[#191919] dark:text-[#ECEEE6]">
                     Preferred Name
                   </label>
                   <input
@@ -252,21 +252,21 @@ export const ProvidersPage: React.FC = () => {
                     value={preferredName}
                     onChange={(e) => setPreferredName(e.target.value)}
                     placeholder="Your preferred name"
-                    className="w-full max-w-md bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl px-3.5 py-2.5 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                    className="w-full max-w-md bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#242A1D] rounded-xl px-3.5 py-2.5 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                   />
-                  <p className="text-[11px] text-[#717171]">
+                  <p className="text-[11px] text-[#717171] dark:text-[#9EA396]">
                     What Openquire calls you in research reports and workspace views.
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between max-w-md">
-                    <label className="block text-xs font-semibold text-[#191919]">
+                    <label className="block text-xs font-semibold text-[#191919] dark:text-[#ECEEE6]">
                       Research Interests
                     </label>
-                    <span className="text-[11px] text-[#717171]">{selectedInterests.length} selected</span>
+                    <span className="text-[11px] text-[#717171] dark:text-[#9EA396]">{selectedInterests.length} selected</span>
                   </div>
-                  <p className="text-[11px] text-[#717171] leading-relaxed">
+                  <p className="text-[11px] text-[#717171] dark:text-[#9EA396] leading-relaxed">
                     Personalizes suggested research topics only. Searches, evidence retrieval, and AI models remain fully unrestricted.
                   </p>
                   <div className="flex flex-wrap gap-1.5 pt-1">
@@ -279,8 +279,8 @@ export const ProvidersPage: React.FC = () => {
                           onClick={() => toggleInterest(interest)}
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#181D13] text-[#B8F36B] shadow-2xs'
-                              : 'bg-[#F2F3EE] hover:bg-[#EAEBE4] text-[#434938] border border-[#E0E2D8]'
+                              ? 'bg-[#181D13] dark:bg-[#B8F36B] text-[#B8F36B] dark:text-[#102000] shadow-2xs font-semibold border border-[#181D13] dark:border-[#B8F36B]'
+                              : 'bg-[#F2F3EE] dark:bg-[#1E221A] hover:bg-[#EAEBE4] dark:hover:bg-[#252B1E] text-[#434938] dark:text-[#C5CAB8] border border-[#E0E2D8] dark:border-[#282D22]'
                           }`}
                         >
                           {isSelected && <Check className="w-3 h-3 stroke-[2.5]" />}
@@ -310,29 +310,29 @@ export const ProvidersPage: React.FC = () => {
               </form>
 
               {/* PostgreSQL Row Level Security status card */}
-              <div className="rounded-xl border border-[#E8E8E5] p-4 space-y-2 text-xs bg-[#FAFBF8]">
+              <div className="rounded-xl border border-[#E8E8E5] dark:border-[#242A1D] p-4 space-y-2 text-xs bg-[#FAFBF8] dark:bg-[#1A1D16]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-semibold text-[#191919]">
-                    <ShieldCheck className="w-4 h-4 text-[#416900]" />
+                  <div className="flex items-center gap-1.5 font-semibold text-[#191919] dark:text-[#ECEEE6]">
+                    <ShieldCheck className="w-4 h-4 text-[#416900] dark:text-[#B8F36B]" />
                     <span>Supabase Cloud Row-Level Security</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-semibold border border-transparent dark:border-emerald-800/40">
                     RLS Active
                   </span>
                 </div>
-                <p className="text-[#555] text-[11px] leading-relaxed">
-                  Your profile and research history are isolated by your Supabase user ID (<code className="bg-[#EAEBE4] px-1 py-0.5 rounded font-mono text-[10px]">{user.id}</code>). PostgreSQL Row Level Security ensures no other authenticated user can read or modify your data.
+                <p className="text-[#555] dark:text-[#9EA396] text-[11px] leading-relaxed">
+                  Your profile and research history are isolated by your Supabase user ID (<code className="bg-[#EAEBE4] dark:bg-[#20251A] text-[#191919] dark:text-[#ECEEE6] px-1 py-0.5 rounded font-mono text-[10px]">{user.id}</code>). PostgreSQL Row Level Security ensures no other authenticated user can read or modify your data.
                 </p>
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-8 border border-[#E8E8E5] shadow-xs text-center space-y-4 max-w-lg mx-auto">
-              <div className="w-12 h-12 rounded-full bg-[#E0E5D3] text-[#434938] flex items-center justify-center mx-auto">
+            <div className="bg-white dark:bg-[#151711] rounded-2xl p-8 border border-[#E8E8E5] dark:border-[#242A1D] shadow-xs text-center space-y-4 max-w-lg mx-auto">
+              <div className="w-12 h-12 rounded-full bg-[#E0E5D3] dark:bg-[#20251A] text-[#434938] dark:text-[#B8F36B] flex items-center justify-center mx-auto">
                 <UserIcon className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-serif font-bold text-[#191919]">Sign in to Openquire</h2>
-                <p className="text-xs text-[#717171] mt-1">
+                <h2 className="text-lg font-serif font-bold text-[#191919] dark:text-[#ECEEE6]">Sign in to Openquire</h2>
+                <p className="text-xs text-[#717171] dark:text-[#9EA396] mt-1">
                   Connect with Email or Google to personalize your profile, customize research interests, and synchronize history cross-device.
                 </p>
               </div>
@@ -756,21 +756,21 @@ export const ProvidersPage: React.FC = () => {
       </div>
 
       {/* Footer Support Documentation Info */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[#E8E8E5]/60 text-xs text-[#717171]">
-        <div className="flex items-center gap-1.5">
-          <HelpCircle className="w-4 h-4" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[#E8E8E5]/60 dark:border-[#282D22] text-xs text-[#717171] dark:text-[#9EA396]">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <HelpCircle className="w-4 h-4 shrink-0" />
           <span>Need a Google Gemini API Key?</span>
           <a
             href="https://aistudio.google.com/app/apikey"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#191919] underline hover:text-[#416900] font-medium"
+            className="text-[#191919] dark:text-[#ECEEE6] underline hover:text-[#416900] dark:hover:text-[#B8F36B] font-medium"
           >
             Create key in Google AI Studio
           </a>
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[11px]">Openquire BYOK Architecture v2.0</span>
+          <span className="font-mono text-[11px] text-[#717171] dark:text-[#808678]">Openquire BYOK Architecture v2.0</span>
         </div>
       </div>
     </div>

@@ -17,7 +17,8 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const base = 'inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 select-none';
+  const base =
+    'inline-flex items-center justify-center font-medium transition-all duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 select-none';
 
   const sizes = {
     sm: 'text-xs px-2.5 py-1.5 rounded-lg gap-1.5',
@@ -26,11 +27,16 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const variants = {
-    primary: 'bg-[#B8F36B] text-[#102000] hover:bg-[#A7EB50] active:scale-[0.98] shadow-xs font-semibold',
-    secondary: 'bg-[#FFFFFF] text-[#191919] border border-[#E8E8E5] hover:bg-[#F1F2ED] shadow-2xs',
-    ghost: 'text-[#717171] hover:text-[#191919] hover:bg-[#F1F2ED]',
-    danger: 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100',
-    'accent-icon': 'w-9 h-9 p-0 rounded-full bg-[#B8F36B] text-[#102000] hover:bg-[#A7EB50] active:scale-95 shadow-xs flex items-center justify-center',
+    primary:
+      'bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] active:scale-[0.98] shadow-xs font-semibold',
+    secondary:
+      'bg-white dark:bg-[#1E2319] text-[#191919] dark:text-[#ECEEE6] border border-[#E8E8E5] dark:border-[#282E20] hover:bg-[#F1F2ED] dark:hover:bg-[#252D1E] shadow-2xs',
+    ghost:
+      'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] hover:bg-[#F1F2ED] dark:hover:bg-[#1E2319]',
+    danger:
+      'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60 hover:bg-red-100 dark:hover:bg-red-900/60',
+    'accent-icon':
+      'w-9 h-9 p-0 rounded-full bg-[#B8F36B] text-[#102000] hover:bg-[#A7EB50] active:scale-95 shadow-xs flex items-center justify-center',
   };
 
   return (
@@ -60,12 +66,12 @@ export const Badge: React.FC<BadgeProps> = ({
   className = '',
 }) => {
   const variants = {
-    neutral: 'bg-[#F1F2ED] text-[#191919]',
-    subtle: 'bg-[#F1F2ED] text-[#717171]',
-    accent: 'bg-[#B8F36B]/40 text-[#102000] border border-[#B8F36B]/60 font-semibold',
-    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    warning: 'bg-amber-50 text-amber-700 border border-amber-200',
-    danger: 'bg-red-50 text-red-600 border border-red-200',
+    neutral: 'bg-[#F1F2ED] dark:bg-[#20251A] text-[#191919] dark:text-[#ECEEE6] border border-transparent dark:border-[#2C3323]',
+    subtle: 'bg-[#F1F2ED] dark:bg-[#1E2319] text-[#717171] dark:text-[#9EA396] border border-transparent dark:border-[#282E20]',
+    accent: 'bg-[#B8F36B]/40 dark:bg-[#242C19] text-[#102000] dark:text-[#D6FF8E] border border-[#B8F36B]/60 dark:border-[#384428] font-semibold',
+    success: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/60',
+    warning: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/60',
+    danger: 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60',
   };
 
   return (
@@ -84,7 +90,7 @@ export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   return (
     <div
-      className={`bg-white border border-[#E8E8E5] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] ${className}`}
+      className={`bg-white dark:bg-[#151711] border border-[#E8E8E5] dark:border-[#282E20] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.25)] ${className}`}
       {...props}
     >
       {children}
@@ -97,8 +103,8 @@ export const DevPlaceholderBadge: React.FC<{ label?: string }> = ({
   label = 'Openquire Notice',
 }) => {
   return (
-    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#F1F2ED] text-[#717171] border border-[#E8E8E5] rounded-md text-[11px] font-mono tracking-wide">
-      <Info className="w-3.5 h-3.5 text-[#9E9E99] shrink-0" />
+    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#F1F2ED] dark:bg-[#1E2319] text-[#717171] dark:text-[#9EA396] border border-[#E8E8E5] dark:border-[#282E20] rounded-md text-[11px] font-mono tracking-wide">
+      <Info className="w-3.5 h-3.5 text-[#9E9E99] dark:text-[#808678] shrink-0" />
       <span>{label}</span>
     </div>
   );

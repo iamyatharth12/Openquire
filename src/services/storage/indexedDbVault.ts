@@ -1,50 +1,22 @@
 import { ICredentialStorage, StoredCredential, ProviderPreference } from './types';
-
-const DB_NAME = 'openquire_vault';
-const DB_VERSION = 1;
-const STORE_CREDENTIALS = 'credentials';
-const STORE_PREFERENCES = 'preferences';
+import {
+  getOpenquireVaultDB,
+  isIndexedDBSupported,
+  STORE_CREDENTIALS,
+  STORE_PREFERENCES,
+} from './openquireDb';
 
 class IndexedDbVault implements ICredentialStorage {
-  private dbPromise: Promise<IDBDatabase> | null = null;
   // In-memory fallback for non-browser/test environments
   private memoryCredentials = new Map<string, StoredCredential>();
   private memoryPreferences = new Map<string, ProviderPreference>();
 
   private isBrowserSupported(): boolean {
-    return typeof window !== 'undefined' && typeof indexedDB !== 'undefined';
+    return isIndexedDBSupported();
   }
 
   private async getDB(): Promise<IDBDatabase> {
-    if (!this.isBrowserSupported()) {
-      throw new Error('IndexedDB not supported in this runtime environment');
-    }
-
-    if (this.dbPromise) {
-      return this.dbPromise;
-    }
-
-    this.dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(STORE_CREDENTIALS)) {
-          db.createObjectStore(STORE_CREDENTIALS, { keyPath: 'providerId' });
-        }
-        if (!db.objectStoreNames.contains(STORE_PREFERENCES)) {
-          db.createObjectStore(STORE_PREFERENCES, { keyPath: 'providerId' });
-        }
-      };
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => {
-        this.dbPromise = null;
-        reject(request.error || new Error('Failed to open IndexedDB vault'));
-      };
-    });
-
-    return this.dbPromise;
+    return getOpenquireVaultDB();
   }
 
   async saveKey(providerId: string, apiKey: string): Promise<void> {

@@ -294,31 +294,31 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
       {/* Top Context & Action Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1.5 min-w-0">
-          <div className="flex items-center gap-2 text-xs text-[#717171] flex-wrap">
+          <div className="flex items-center gap-2 text-xs text-[#717171] dark:text-[#9EA396] flex-wrap">
             <span>Deep Research</span>
-            <span className="text-[#DFE0DC]">/</span>
-            <span className="font-mono bg-[#F1F2ED] px-2 py-0.5 rounded text-[#191919] border border-[#E8E8E5]">
+            <span className="text-[#DFE0DC] dark:text-[#282E20]">/</span>
+            <span className="font-mono bg-[#F1F2ED] dark:bg-[#1E2319] px-2 py-0.5 rounded text-[#191919] dark:text-[#ECEEE6] border border-[#E8E8E5] dark:border-[#282E20]">
               {isRunning ? 'PIPELINE-ACTIVE' : currentStepIndex === 6 ? 'COMPLETED' : 'STANDBY'}
             </span>
           </div>
-          <h1 className="text-lg sm:text-2xl md:text-3xl font-semibold text-[#191919] tracking-tight break-words min-w-0">
+          <h1 className="text-lg sm:text-2xl md:text-3xl font-semibold text-[#191919] dark:text-[#ECEEE6] tracking-tight break-words min-w-0">
             {currentTopic || 'Autonomous Deep Research'}
           </h1>
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#E8E8E5] text-xs font-medium text-[#191919]">
-              <Sparkles className="w-3.5 h-3.5 text-[#416900] shrink-0" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#151711] border border-[#E8E8E5] dark:border-[#282E20] text-xs font-medium text-[#191919] dark:text-[#ECEEE6]">
+              <Sparkles className="w-3.5 h-3.5 text-[#416900] dark:text-[#B8F36B] shrink-0" />
               <span>Multi-Step Investigation</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#E8E8E5] text-xs text-[#717171] truncate max-w-[200px]">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#151711] border border-[#E8E8E5] dark:border-[#282E20] text-xs text-[#717171] dark:text-[#9EA396] truncate max-w-[200px]">
               <span className="truncate">{activeModelDisplay}</span>
             </span>
             <span
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold ${
                 isRunning
-                  ? 'bg-[#B8F36B]/40 text-[#102000] border-[#B8F36B]/60'
+                  ? 'bg-[#B8F36B]/40 dark:bg-[#242C19] text-[#102000] dark:text-[#D6FF8E] border-[#B8F36B]/60 dark:border-[#384428]'
                   : currentStepIndex === 6
-                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                  : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40'
+                  : 'bg-zinc-100 dark:bg-[#20251A] text-zinc-700 dark:text-[#C5CAB8] border-zinc-200 dark:border-[#2C3323]'
               }`}
             >
               {isRunning && (
@@ -346,7 +346,7 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
             <button
               type="button"
               onClick={handleStopResearch}
-              className="inline-flex items-center gap-2 px-4 py-2 min-h-[40px] rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 active:scale-95 transition-all cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-2 px-4 py-2 min-h-[40px] rounded-full text-xs font-semibold bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60 hover:bg-red-100 dark:hover:bg-red-900/60 active:scale-95 transition-all cursor-pointer shadow-2xs"
             >
               <StopCircle className="w-4 h-4 shrink-0" />
               <span>Stop research</span>
@@ -369,13 +369,13 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
       {!currentTopic && !isRunning && (
         <form
           onSubmit={handleStartNew}
-          className="bg-white rounded-2xl border border-[#E8E8E5] p-4 sm:p-5 shadow-xs space-y-3"
+          className="bg-white dark:bg-[#151711] rounded-2xl border border-[#E8E8E5] dark:border-[#282E20] p-4 sm:p-5 shadow-xs space-y-3"
         >
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#717171] uppercase tracking-wider">
-            <Search className="w-4 h-4 text-[#416900]" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#717171] dark:text-[#9EA396] uppercase tracking-wider">
+            <Search className="w-4 h-4 text-[#416900] dark:text-[#B8F36B]" />
             <span>Launch Deep Research Pipeline</span>
           </div>
-          <p className="text-xs text-[#717171] leading-relaxed">
+          <p className="text-xs text-[#717171] dark:text-[#9EA396] leading-relaxed">
             Deep research decomposes your complex query into multiple sub-queries, executes multi-vector web searches, cross-verifies sources, and produces an evidence-grounded report.
           </p>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -384,7 +384,7 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
               value={queryInput}
               onChange={(e) => setQueryInput(e.target.value)}
               placeholder="Enter a research question to investigate..."
-              className="flex-1 bg-[#F6F3F2] border border-[#E8E8E5] rounded-xl px-4 py-2.5 min-h-[44px] text-sm text-[#191919] focus:outline-none focus:border-[#B8F36B]"
+              className="flex-1 bg-[#F6F3F2] dark:bg-[#181B14] border border-[#E8E8E5] dark:border-[#282E20] rounded-xl px-4 py-2.5 min-h-[44px] text-sm text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#9E9E99] dark:placeholder:text-[#6E7366] focus:outline-none focus:border-[#B8F36B] dark:focus:border-[#B8F36B]"
             />
             <button
               type="submit"
@@ -398,13 +398,15 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
       )}
 
       {/* Mode Selector Navigation Bar (Scrollable on small screens) */}
-      <div className="flex items-center justify-between bg-[#F1F2ED] p-1 sm:p-1.5 rounded-2xl border border-[#E8E8E5] overflow-x-auto scrollbar-none">
+      <div className="flex items-center justify-between bg-[#F1F2ED] dark:bg-[#181B14] p-1 sm:p-1.5 rounded-2xl border border-[#E8E8E5] dark:border-[#282E20] overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-1 text-xs font-medium shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('plan')}
             className={`px-3 py-1.5 min-h-[38px] rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'plan' ? 'bg-white text-[#191919] shadow-2xs font-semibold' : 'text-[#717171] hover:text-[#191919]'
+              activeTab === 'plan'
+                ? 'bg-white dark:bg-[#242C19] text-[#191919] dark:text-[#D6FF8E] shadow-2xs font-semibold border border-transparent dark:border-[#384428]'
+                : 'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] dark:hover:bg-[#1E2319]'
             }`}
           >
             Research plan
@@ -413,7 +415,9 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
             type="button"
             onClick={() => setActiveTab('activity')}
             className={`px-3 py-1.5 min-h-[38px] rounded-xl transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === 'activity' ? 'bg-white text-[#191919] shadow-2xs font-semibold' : 'text-[#717171] hover:text-[#191919]'
+              activeTab === 'activity'
+                ? 'bg-white dark:bg-[#242C19] text-[#191919] dark:text-[#D6FF8E] shadow-2xs font-semibold border border-transparent dark:border-[#384428]'
+                : 'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] dark:hover:bg-[#1E2319]'
             }`}
           >
             <span>Activity</span>
@@ -423,11 +427,13 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
             type="button"
             onClick={() => setActiveTab('sources')}
             className={`px-3 py-1.5 min-h-[38px] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-              activeTab === 'sources' ? 'bg-white text-[#191919] shadow-2xs font-semibold' : 'text-[#717171] hover:text-[#191919]'
+              activeTab === 'sources'
+                ? 'bg-white dark:bg-[#242C19] text-[#191919] dark:text-[#D6FF8E] shadow-2xs font-semibold border border-transparent dark:border-[#384428]'
+                : 'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] dark:hover:bg-[#1E2319]'
             }`}
           >
             <span>Sources</span>
-            <span className="bg-[#E0E5D3] text-[#181D13] px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">
+            <span className="bg-[#E0E5D3] dark:bg-[#20251A] text-[#181D13] dark:text-[#B8F36B] px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">
               {discoveredSources.length}
             </span>
           </button>
@@ -435,15 +441,17 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
             type="button"
             onClick={() => setActiveTab('report')}
             className={`px-3 py-1.5 min-h-[38px] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-              activeTab === 'report' ? 'bg-white text-[#191919] shadow-2xs font-semibold' : 'text-[#717171] hover:text-[#191919]'
+              activeTab === 'report'
+                ? 'bg-white dark:bg-[#242C19] text-[#191919] dark:text-[#D6FF8E] shadow-2xs font-semibold border border-transparent dark:border-[#384428]'
+                : 'text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] dark:hover:bg-[#1E2319]'
             }`}
           >
             <span>Report Draft</span>
-            {!finalReport && <Lock className="w-3 h-3 text-[#9E9E99]" />}
+            {!finalReport && <Lock className="w-3 h-3 text-[#9E9E99] dark:text-[#72786B]" />}
           </button>
         </div>
 
-        <div className="flex items-center gap-2 px-2 text-xs font-mono text-[#717171] shrink-0">
+        <div className="flex items-center gap-2 px-2 text-xs font-mono text-[#717171] dark:text-[#9EA396] shrink-0">
           <span className="hidden sm:inline">Runtime:</span>
           <span>{formatRuntime(elapsedSeconds)}</span>
         </div>
@@ -453,19 +461,19 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Sub-column: Research Stepper & Pipeline (5 cols) */}
         <div className={`flex-col gap-5 ${activeTab === 'plan' ? 'flex' : 'hidden lg:flex'} lg:col-span-5`}>
-          <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] shadow-xs flex flex-col gap-5">
-            <div className="flex items-center justify-between pb-1 border-b border-[#E8E8E5]/50">
-              <h2 className="text-sm sm:text-base font-semibold text-[#191919]">
+          <div className="bg-white dark:bg-[#151711] rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] dark:border-[#282E20] shadow-xs flex flex-col gap-5">
+            <div className="flex items-center justify-between pb-1 border-b border-[#E8E8E5]/50 dark:border-[#282E20]">
+              <h2 className="text-sm sm:text-base font-semibold text-[#191919] dark:text-[#ECEEE6]">
                 Investigation Pipeline
               </h2>
-              <span className="text-[11px] font-mono font-bold text-[#717171] bg-[#F1F2ED] px-2 py-0.5 rounded border border-[#E8E8E5]">
+              <span className="text-[11px] font-mono font-bold text-[#717171] dark:text-[#9EA396] bg-[#F1F2ED] dark:bg-[#1E2319] px-2 py-0.5 rounded border border-[#E8E8E5] dark:border-[#282E20]">
                 {Math.round((currentStepIndex / 6) * 100)}% Done
               </span>
             </div>
 
             {/* Stepper timeline */}
             <div className="relative flex flex-col gap-5 pl-1">
-              <div className="absolute left-[18px] top-3 bottom-6 w-0.5 bg-[#E8E8E5]" />
+              <div className="absolute left-[18px] top-3 bottom-6 w-0.5 bg-[#E8E8E5] dark:bg-[#282E20]" />
 
               {steps.map((st) => {
                 const isCompleted = currentStepIndex > st.num;
@@ -481,16 +489,16 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                     )}
 
                     {isActive && (
-                      <div className="relative z-10 w-8 h-8 rounded-full bg-white text-emerald-600 flex items-center justify-center shrink-0 ring-4 ring-[#B8F36B] shadow-sm">
+                      <div className="relative z-10 w-8 h-8 rounded-full bg-white dark:bg-[#151711] text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 ring-4 ring-[#B8F36B] shadow-sm">
                         <span className="relative flex h-3 w-3">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-600" />
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-600 dark:bg-emerald-400" />
                         </span>
                       </div>
                     )}
 
                     {isPending && (
-                      <div className="relative z-10 w-8 h-8 rounded-full bg-[#F1F2ED] text-[#9E9E99] flex items-center justify-center shrink-0 text-xs font-mono font-semibold border border-[#E8E8E5]">
+                      <div className="relative z-10 w-8 h-8 rounded-full bg-[#F1F2ED] dark:bg-[#1E2319] text-[#9E9E99] dark:text-[#72786B] flex items-center justify-center shrink-0 text-xs font-mono font-semibold border border-[#E8E8E5] dark:border-[#282E20]">
                         {st.num}
                       </div>
                     )}
@@ -498,7 +506,7 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                     <div
                       className={`flex flex-col pt-0.5 min-w-0 flex-1 ${
                         isActive
-                          ? 'bg-[#F6F3F2] p-3 rounded-xl border border-[#E8E8E5]'
+                          ? 'bg-[#F6F3F2] dark:bg-[#181B14] p-3 rounded-xl border border-[#E8E8E5] dark:border-[#282E20]'
                           : ''
                       }`}
                     >
@@ -506,10 +514,10 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                         <p
                           className={`text-xs sm:text-sm font-semibold ${
                             isActive
-                              ? 'text-[#191919]'
+                              ? 'text-[#191919] dark:text-[#ECEEE6]'
                               : isCompleted
-                              ? 'text-[#191919]'
-                              : 'text-[#9E9E99]'
+                              ? 'text-[#191919] dark:text-[#ECEEE6]'
+                              : 'text-[#9E9E99] dark:text-[#72786B]'
                           }`}
                         >
                           {st.title}
@@ -520,9 +528,9 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] sm:text-xs text-[#717171] pt-0.5">{st.desc}</p>
+                      <p className="text-[11px] sm:text-xs text-[#717171] dark:text-[#9EA396] pt-0.5">{st.desc}</p>
                       {isActive && (
-                        <div className="mt-2 w-full bg-[#E5E2E1] rounded-full h-1.5 overflow-hidden">
+                        <div className="mt-2 w-full bg-[#E5E2E1] dark:bg-[#282E20] rounded-full h-1.5 overflow-hidden">
                           <div className="bg-[#B8F36B] h-1.5 rounded-full w-3/4 animate-pulse" />
                         </div>
                       )}
@@ -534,23 +542,23 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
           </div>
 
           {/* Telemetry Search Efficiency Card */}
-          <div className="bg-white rounded-2xl p-4 border border-[#E8E8E5] shadow-xs space-y-2">
-            <div className="flex items-center justify-between text-xs font-semibold text-[#717171]">
+          <div className="bg-white dark:bg-[#151711] rounded-2xl p-4 border border-[#E8E8E5] dark:border-[#282E20] shadow-xs space-y-2">
+            <div className="flex items-center justify-between text-xs font-semibold text-[#717171] dark:text-[#9EA396]">
               <span className="uppercase tracking-wider">Search Telemetry</span>
               <Sliders className="w-3.5 h-3.5" />
             </div>
             <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-              <div className="bg-[#F6F3F2] p-2 sm:p-2.5 rounded-xl border border-[#E8E8E5]/60">
-                <p className="text-[11px] font-mono text-[#717171]">Retrieved</p>
-                <p className="text-base sm:text-lg font-bold text-[#191919]">{discoveredSources.length}</p>
+              <div className="bg-[#F6F3F2] dark:bg-[#181B14] p-2 sm:p-2.5 rounded-xl border border-[#E8E8E5]/60 dark:border-[#282E20]">
+                <p className="text-[11px] font-mono text-[#717171] dark:text-[#9EA396]">Retrieved</p>
+                <p className="text-base sm:text-lg font-bold text-[#191919] dark:text-[#ECEEE6]">{discoveredSources.length}</p>
               </div>
-              <div className="bg-[#F6F3F2] p-2 sm:p-2.5 rounded-xl border border-[#E8E8E5]/60">
-                <p className="text-[11px] font-mono text-[#717171]">Vectors</p>
-                <p className="text-base sm:text-lg font-bold text-[#191919]">{subQueries.length}</p>
+              <div className="bg-[#F6F3F2] dark:bg-[#181B14] p-2 sm:p-2.5 rounded-xl border border-[#E8E8E5]/60 dark:border-[#282E20]">
+                <p className="text-[11px] font-mono text-[#717171] dark:text-[#9EA396]">Vectors</p>
+                <p className="text-base sm:text-lg font-bold text-[#191919] dark:text-[#ECEEE6]">{subQueries.length}</p>
               </div>
-              <div className="bg-[#F6F3F2] p-2 sm:p-2.5 rounded-xl border border-[#E8E8E5]/60">
-                <p className="text-[11px] font-mono text-[#717171]">Step</p>
-                <p className="text-base sm:text-lg font-bold text-[#416900]">{currentStepIndex}/6</p>
+              <div className="bg-[#F6F3F2] dark:bg-[#181B14] p-2 sm:p-2.5 rounded-xl border border-[#E8E8E5]/60 dark:border-[#282E20]">
+                <p className="text-[11px] font-mono text-[#717171] dark:text-[#9EA396]">Step</p>
+                <p className="text-base sm:text-lg font-bold text-[#416900] dark:text-[#B8F36B]">{currentStepIndex}/6</p>
               </div>
             </div>
           </div>
@@ -560,20 +568,20 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
         <div className={`flex-col gap-5 ${activeTab !== 'plan' ? 'flex' : 'hidden lg:flex'} lg:col-span-7 min-w-0`}>
           {/* TAB 1: Report Draft */}
           {activeTab === 'report' && (
-            <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] shadow-xs space-y-4 min-w-0">
-              <div className="flex items-center justify-between pb-2 border-b border-[#E8E8E5]/60">
+            <div className="bg-white dark:bg-[#151711] rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] dark:border-[#282E20] shadow-xs space-y-4 min-w-0">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8E8E5]/60 dark:border-[#282E20]">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-[#416900]" />
-                  <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
+                  <BookOpen className="w-4 h-4 text-[#416900] dark:text-[#B8F36B]" />
+                  <h3 className="text-sm sm:text-base font-semibold text-[#191919] dark:text-[#ECEEE6]">
                     Synthesized Research Report
                   </h3>
                 </div>
-                <span className="text-xs font-mono text-[#717171]">
+                <span className="text-xs font-mono text-[#717171] dark:text-[#9EA396]">
                   {finalReport ? 'Ready' : 'Pending Synthesis'}
                 </span>
               </div>
               {finalReport ? (
-                <div className="text-sm leading-relaxed text-[#191919] min-w-0">
+                <div className="text-sm leading-relaxed text-[#191919] dark:text-[#ECEEE6] min-w-0">
                   <MarkdownAnswerRenderer
                     content={finalReport}
                     validSourceIds={discoveredSources.map((s) => s.id)}
@@ -591,9 +599,9 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                   />
                 </div>
               ) : (
-                <div className="p-8 text-center text-xs text-[#717171] space-y-2">
-                  <Lock className="w-6 h-6 text-[#9E9E99] mx-auto" />
-                  <p className="font-semibold text-[#191919]">Report Draft Not Yet Generated</p>
+                <div className="p-8 text-center text-xs text-[#717171] dark:text-[#9EA396] space-y-2">
+                  <Lock className="w-6 h-6 text-[#9E9E99] dark:text-[#72786B] mx-auto" />
+                  <p className="font-semibold text-[#191919] dark:text-[#ECEEE6]">Report Draft Not Yet Generated</p>
                   <p>The synthesis report will appear here once the retrieval and evidence pass finishes.</p>
                 </div>
               )}
@@ -605,41 +613,41 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
             <>
               {/* Execution Sub-queries (Shown on activity or desktop plan) */}
               {(activeTab === 'activity' || activeTab === 'plan') && (
-                <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] shadow-xs space-y-3 min-w-0">
+                <div className="bg-white dark:bg-[#151711] rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] dark:border-[#282E20] shadow-xs space-y-3 min-w-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-[#B8F36B]/40 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-[#B8F36B]/40 dark:bg-[#242C19] flex items-center justify-center shrink-0">
                         <RotateCw
-                          className={`w-4 h-4 text-[#416900] ${isRunning ? 'animate-spin' : ''}`}
+                          className={`w-4 h-4 text-[#416900] dark:text-[#B8F36B] ${isRunning ? 'animate-spin' : ''}`}
                         />
                       </div>
-                      <h3 className="text-sm sm:text-base font-semibold text-[#191919] truncate">
+                      <h3 className="text-sm sm:text-base font-semibold text-[#191919] dark:text-[#ECEEE6] truncate">
                         {isRunning ? 'Investigating research vectors...' : 'Investigation Scope'}
                       </h3>
                     </div>
-                    <span className="text-[11px] font-mono text-[#717171] bg-[#F1F2ED] px-2 py-0.5 rounded border border-[#E8E8E5] shrink-0">
+                    <span className="text-[11px] font-mono text-[#717171] dark:text-[#9EA396] bg-[#F1F2ED] dark:bg-[#1E2319] px-2 py-0.5 rounded border border-[#E8E8E5] dark:border-[#282E20] shrink-0">
                       {subQueries.length} Vectors
                     </span>
                   </div>
 
                   <div className="flex flex-col gap-2 pt-1">
                     {subQueries.length === 0 ? (
-                      <p className="text-xs text-[#717171] italic p-3 bg-[#F6F3F2] rounded-xl">
+                      <p className="text-xs text-[#717171] dark:text-[#9EA396] italic p-3 bg-[#F6F3F2] dark:bg-[#181B14] rounded-xl border border-[#E8E8E5]/60 dark:border-[#282E20]">
                         Awaiting query decomposition...
                       </p>
                     ) : (
                       subQueries.map((q, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center gap-2 p-2.5 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5]/60 text-xs text-[#191919] min-w-0"
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-[#F6F3F2] dark:bg-[#181B14] border border-[#E8E8E5]/60 dark:border-[#282E20] text-xs text-[#191919] dark:text-[#ECEEE6] min-w-0"
                         >
-                          <ArrowRight className="w-3.5 h-3.5 text-[#416900] shrink-0" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#416900] dark:text-[#B8F36B] shrink-0" />
                           <span className="truncate flex-1 font-medium">{q.text}</span>
                           <span
                             className={`font-mono text-[11px] shrink-0 ${
                               q.isActive
-                                ? 'text-[#416900] font-semibold animate-pulse'
-                                : 'text-[#717171]'
+                                ? 'text-[#416900] dark:text-[#B8F36B] font-semibold animate-pulse'
+                                : 'text-[#717171] dark:text-[#9EA396]'
                             }`}
                           >
                             {q.status}
@@ -653,21 +661,21 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
 
               {/* Discovered Sources Feed (Shown on sources tab or desktop activity) */}
               {(activeTab === 'sources' || activeTab === 'activity' || activeTab === 'plan') && (
-                <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] shadow-xs space-y-3 min-w-0">
-                  <div className="flex items-center justify-between pb-1 border-b border-[#E8E8E5]/50">
+                <div className="bg-white dark:bg-[#151711] rounded-2xl p-4 sm:p-6 border border-[#E8E8E5] dark:border-[#282E20] shadow-xs space-y-3 min-w-0">
+                  <div className="flex items-center justify-between pb-1 border-b border-[#E8E8E5]/50 dark:border-[#282E20]">
                     <div className="flex items-center gap-2">
-                      <FileCheck className="w-4 h-4 text-[#717171]" />
-                      <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
+                      <FileCheck className="w-4 h-4 text-[#717171] dark:text-[#9EA396]" />
+                      <h3 className="text-sm sm:text-base font-semibold text-[#191919] dark:text-[#ECEEE6]">
                         Discovered Sources
                       </h3>
-                      <span className="px-2 py-0.5 rounded-full bg-[#E0E5D3] text-[#181D13] font-mono text-[11px] font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-[#E0E5D3] dark:bg-[#20251A] text-[#181D13] dark:text-[#B8F36B] font-mono text-[11px] font-bold">
                         {discoveredSources.length}
                       </span>
                     </div>
                   </div>
 
                   {discoveredSources.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-[#717171]">
+                    <div className="p-6 text-center text-xs text-[#717171] dark:text-[#9EA396]">
                       No sources retrieved yet for this investigation.
                     </div>
                   ) : (
@@ -675,26 +683,26 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                       {discoveredSources.map((src) => (
                         <div
                           key={src.id}
-                          className="flex items-center justify-between p-3 rounded-xl bg-[#F6F3F2] hover:bg-[#EAEBE4] transition-all border border-[#E8E8E5]/60 group min-w-0 gap-2"
+                          className="flex items-center justify-between p-3 rounded-xl bg-[#F6F3F2] dark:bg-[#181B14] hover:bg-[#EAEBE4] dark:hover:bg-[#20251A] transition-all border border-[#E8E8E5]/60 dark:border-[#282E20] group min-w-0 gap-2"
                         >
                           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                            <div className="w-8 h-8 rounded-lg bg-white border border-[#E8E8E5] flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
-                              <span className="text-[#434938] text-[10px] font-mono">
+                            <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#1F241A] border border-[#E8E8E5] dark:border-[#282E20] flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+                              <span className="text-[#434938] dark:text-[#C5CAB8] text-[10px] font-mono">
                                 #{src.id}
                               </span>
                             </div>
                             <div className="flex flex-col min-w-0 flex-1">
-                              <p className="text-xs font-semibold text-[#191919] truncate group-hover:text-[#416900]">
+                              <p className="text-xs font-semibold text-[#191919] dark:text-[#ECEEE6] truncate group-hover:text-[#416900] dark:group-hover:text-[#B8F36B]">
                                 {src.title}
                               </p>
-                              <p className="text-[11px] font-mono text-[#717171] truncate">{src.domain}</p>
+                              <p className="text-[11px] font-mono text-[#717171] dark:text-[#9EA396] truncate">{src.domain}</p>
                             </div>
                           </div>
                           <a
                             href={src.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 min-h-[36px] min-w-[36px] justify-center px-2 py-1 text-[11px] font-mono text-[#416900] hover:underline shrink-0"
+                            className="inline-flex items-center gap-1 min-h-[36px] min-w-[36px] justify-center px-2 py-1 text-[11px] font-mono text-[#416900] dark:text-[#B8F36B] hover:underline shrink-0"
                             aria-label={`Open source #${src.id}`}
                           >
                             <span className="hidden sm:inline">Open</span>
@@ -709,9 +717,9 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
 
               {/* System Telemetry Stream (Live Logs) - Shown on activity */}
               {(activeTab === 'activity' || activeTab === 'plan') && (
-                <div className="bg-[#191919] text-[#FAFAF8] rounded-2xl p-4 font-mono text-xs space-y-1.5 shadow-md min-w-0">
-                  <div className="flex items-center justify-between pb-1 border-b border-[#313030] text-[11px]">
-                    <div className="flex items-center gap-1.5 text-[#E5E2E1]">
+                <div className="bg-[#191919] dark:bg-[#10120D] text-[#FAFAF8] dark:text-[#ECEEE6] rounded-2xl p-4 font-mono text-xs space-y-1.5 shadow-md border border-transparent dark:border-[#282E20] min-w-0">
+                  <div className="flex items-center justify-between pb-1 border-b border-[#313030] dark:border-[#282E20] text-[11px]">
+                    <div className="flex items-center gap-1.5 text-[#E5E2E1] dark:text-[#C5CAB8]">
                       <Terminal className="w-3.5 h-3.5" />
                       <span>System Telemetry Stream</span>
                     </div>
@@ -719,13 +727,13 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
                       {isRunning ? 'LIVE LOGS' : 'STANDBY'}
                     </span>
                   </div>
-                  <div className="space-y-1 text-[#9E9E99] pt-1 max-h-48 overflow-y-auto break-words">
+                  <div className="space-y-1 text-[#9E9E99] dark:text-[#9EA396] pt-1 max-h-48 overflow-y-auto break-words">
                     {logs.length === 0 ? (
-                      <p className="text-[#717171] italic">[00:00:00] Awaiting pipeline activation...</p>
+                      <p className="text-[#717171] dark:text-[#808678] italic">[00:00:00] Awaiting pipeline activation...</p>
                     ) : (
                       logs.map((log, idx) => (
                         <p key={idx} className={log.highlight ? 'text-[#B8F36B]' : ''}>
-                          <span className="text-[#717171]">[{log.time}]</span> {log.message}
+                          <span className="text-[#717171] dark:text-[#808678]">[{log.time}]</span> {log.message}
                         </p>
                       ))
                     )}

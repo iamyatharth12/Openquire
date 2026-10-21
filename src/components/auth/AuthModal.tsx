@@ -255,9 +255,7 @@ export const AuthModal: React.FC = () => {
       if (res.error) {
         setProfileErrorMessage(res.error);
       } else {
-        setProfileSuccessMessage(
-          `Confirmation email sent to ${newEmailInput}. Please check both inboxes to confirm the change.`
-        );
+        setProfileSuccessMessage('Verification emails sent. Check your inbox to confirm.');
         setShowEmailChange(false);
         setNewEmailInput('');
       }
@@ -267,40 +265,50 @@ export const AuthModal: React.FC = () => {
   };
 
   const handleCopySql = () => {
-    const sql = `-- Openquire: Supabase Tables & RLS Migration
+    const sql = `-- Openquire Database Schema Migration
+-- Run in your Supabase SQL Editor:
+
 CREATE TABLE IF NOT EXISTS public.conversations (
-  id TEXT PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL DEFAULT auth.uid(),
-  title TEXT NOT NULL,
-  mode TEXT NOT NULL DEFAULT 'web',
-  created_at BIGINT NOT NULL,
-  updated_at BIGINT NOT NULL,
-  model_id TEXT NOT NULL DEFAULT 'gemini-2.5-flash',
-  provider_id TEXT NOT NULL DEFAULT 'gemini',
-  initial_query TEXT,
-  messages JSONB NOT NULL DEFAULT '[]'::jsonb
+  id text PRIMARY KEY,
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  initial_query text,
+  mode text NOT NULL,
+  model_id text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  status text NOT NULL DEFAULT 'completed',
+  citations_count integer NOT NULL DEFAULT 0,
+  synthesis_markdown text,
+  evidence_json jsonb DEFAULT '[]'::jsonb
 );
 
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  interests TEXT[] NOT NULL DEFAULT '{}'::text[],
-  onboarding_completed BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name text,
+  interests jsonb DEFAULT '[]'::jsonb,
+  avatar_url text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Row-Level Security Enforcers:
 ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can select own conversations" ON public.conversations FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own conversations" ON public.conversations FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own conversations" ON public.conversations FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own conversations" ON public.conversations FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Users can only access own conversations"
+  ON public.conversations
+  FOR ALL
+  TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can select own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);`;
+CREATE POLICY "Users can only access own profile"
+  ON public.profiles
+  FOR ALL
+  TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);`;
 
     navigator.clipboard.writeText(sql);
     setCopiedSql(true);
@@ -316,12 +324,12 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
   const providerName = user?.app_metadata?.provider || 'email';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl border border-[#E8E8E5] shadow-2xl max-w-lg w-full overflow-hidden transition-all animate-in fade-in zoom-in-95 duration-150 max-h-[92dvh] flex flex-col my-auto">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-[#161813] rounded-2xl border border-[#E8E8E5] dark:border-[#282D22] shadow-2xl max-w-lg w-full overflow-hidden transition-all animate-in fade-in zoom-in-95 duration-150 max-h-[92dvh] flex flex-col my-auto text-[#191919] dark:text-[#ECEEE6]">
         {/* Header */}
-        <div className="px-4 sm:px-6 pt-5 pb-3.5 sm:pt-6 sm:pb-4 border-b border-[#F0F1EA] flex items-center justify-between shrink-0">
+        <div className="px-4 sm:px-6 pt-5 pb-3.5 sm:pt-6 sm:pb-4 border-b border-[#F0F1EA] dark:border-[#242A1D] flex items-center justify-between shrink-0">
           <div className="min-w-0 pr-2">
-            <h3 className="text-base sm:text-lg font-serif font-bold text-[#191919] tracking-tight break-words">
+            <h3 className="text-base sm:text-lg font-serif font-bold text-[#191919] dark:text-[#ECEEE6] tracking-tight break-words">
               {authModalMode === 'profile'
                 ? 'Profile & Account Settings'
                 : authModalMode === 'sign_up'
@@ -332,7 +340,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 ? 'Set New Password'
                 : 'Sign In to Openquire'}
             </h3>
-            <p className="text-xs text-[#717171] mt-0.5 leading-relaxed">
+            <p className="text-xs text-[#717171] dark:text-[#9EA396] mt-0.5 leading-relaxed">
               {authModalMode === 'profile'
                 ? 'Manage your preferred name, research interests, and session'
                 : 'Synchronize research history and evidence cross-device'}
@@ -340,7 +348,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
           </div>
           <button
             onClick={closeAuthModal}
-            className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-full flex items-center justify-center text-[#717171] hover:text-[#191919] hover:bg-[#F1F2ED] transition-colors cursor-pointer shrink-0"
+            className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-full flex items-center justify-center text-[#717171] dark:text-[#9EA396] hover:text-[#191919] dark:hover:text-[#ECEEE6] hover:bg-[#F1F2ED] dark:hover:bg-[#1E221A] transition-colors cursor-pointer shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -349,33 +357,33 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
 
         {/* Global Feedback banners */}
         {errorMessage && (
-          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 shrink-0">
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-2 shrink-0">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span className="break-words">{errorMessage}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2 shrink-0">
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2 shrink-0">
             <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
             <span className="break-words">{successMessage}</span>
           </div>
         )}
 
         {/* Content body */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1">
+        <div className="p-4 sm:p-6 pb-6 sm:pb-8 overflow-y-auto space-y-4 sm:space-y-5 flex-1 min-h-0">
           {/* ========================================================================= */}
           {/* PROFILE & SETTINGS MODE */}
           {/* ========================================================================= */}
           {authModalMode === 'profile' && isAuthenticated && user && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Profile Card Header */}
-              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-[#F8F9F5] border border-[#E8E8E5]">
+              <div className="flex items-center gap-3.5 p-4 rounded-xl bg-[#F8F9F5] dark:bg-[#1A1D16] border border-[#E8E8E5] dark:border-[#282D22]">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
                     alt={currentDisplayName}
-                    className="w-12 h-12 rounded-full object-cover border border-[#C2C9B3] shrink-0"
+                    className="w-12 h-12 rounded-full object-cover border border-[#C2C9B3] dark:border-[#2C3125] shrink-0"
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-[#B8F36B] text-[#102000] font-bold text-sm flex items-center justify-center shrink-0 border border-[#A7EB50]">
@@ -383,36 +391,36 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-[#191919] truncate">{currentDisplayName}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E0E5D3] text-[#416900] uppercase font-semibold">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold text-[#191919] dark:text-[#ECEEE6] truncate">{currentDisplayName}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E0E5D3] dark:bg-[#242C19] text-[#416900] dark:text-[#B8F36B] uppercase font-semibold">
                       {providerName}
                     </span>
                   </div>
-                  <p className="text-xs text-[#717171] truncate mt-0.5">{user.email}</p>
+                  <p className="text-xs text-[#717171] dark:text-[#9EA396] truncate mt-0.5">{user.email}</p>
                 </div>
               </div>
 
               {/* Profile Feedback */}
               {profileErrorMessage && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{profileErrorMessage}</span>
                 </div>
               )}
 
               {profileSuccessMessage && (
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2">
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{profileSuccessMessage}</span>
                 </div>
               )}
 
               {/* Profile Form: Preferred Name & Interests */}
-              <form onSubmit={handleSaveProfile} className="space-y-5">
+              <form onSubmit={handleSaveProfile} className="space-y-4">
                 {/* Field 1: Preferred Display Name */}
                 <div className="space-y-1.5">
-                  <label htmlFor="settings-preferred-name" className="block text-xs font-semibold text-[#191919]">
+                  <label htmlFor="settings-preferred-name" className="block text-xs font-semibold text-[#191919] dark:text-[#ECEEE6]">
                     Preferred Name
                   </label>
                   <div className="relative">
@@ -425,10 +433,10 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                         setPreferredName(e.target.value);
                       }}
                       placeholder="e.g. Eleanor, Dr. Smith, Alex"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl px-3.5 py-2.5 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl px-3.5 py-2.5 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
-                  <p className="text-[11px] text-[#717171]">
+                  <p className="text-[11px] text-[#717171] dark:text-[#9EA396]">
                     What you prefer Openquire to call you in the workspace and exported research notes.
                   </p>
                 </div>
@@ -436,14 +444,14 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 {/* Field 2: Research Interests */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-semibold text-[#191919]">
+                    <label className="block text-xs font-semibold text-[#191919] dark:text-[#ECEEE6]">
                       Research Interests
                     </label>
-                    <span className="text-[11px] text-[#717171]">
+                    <span className="text-[11px] text-[#717171] dark:text-[#9EA396]">
                       {selectedInterests.length} selected
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#717171] leading-relaxed">
+                  <p className="text-[11px] text-[#717171] dark:text-[#9EA396] leading-relaxed">
                     Personalize your suggested exploration topics. Searches and models remain fully unrestricted.
                   </p>
                   <div className="flex flex-wrap gap-1.5 pt-1">
@@ -456,8 +464,8 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                           onClick={() => toggleInterest(interest)}
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#181D13] text-[#B8F36B] shadow-2xs'
-                              : 'bg-[#F2F3EE] hover:bg-[#EAEBE4] text-[#434938] border border-[#E0E2D8]'
+                              ? 'bg-[#181D13] dark:bg-[#B8F36B] text-[#B8F36B] dark:text-[#102000] shadow-2xs font-semibold border border-[#181D13] dark:border-[#B8F36B]'
+                              : 'bg-[#F2F3EE] dark:bg-[#1E221A] hover:bg-[#EAEBE4] dark:hover:bg-[#252B1E] text-[#434938] dark:text-[#C5CAB8] border border-[#E0E2D8] dark:border-[#282D22]'
                           }`}
                         >
                           {isSelected && <Check className="w-3 h-3 stroke-[2.5]" />}
@@ -486,17 +494,17 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
               </form>
 
               {/* Account Identity & Email Section */}
-              <div className="pt-4 border-t border-[#E8E8E5] space-y-3">
+              <div className="pt-3 border-t border-[#E8E8E5] dark:border-[#282D22] space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold text-[#191919]">Account Email</p>
-                    <p className="text-xs font-mono text-[#717171]">{user.email}</p>
+                    <p className="text-xs font-semibold text-[#191919] dark:text-[#ECEEE6]">Account Email</p>
+                    <p className="text-xs font-mono text-[#717171] dark:text-[#9EA396]">{user.email}</p>
                   </div>
                   {providerName === 'email' && (
                     <button
                       type="button"
                       onClick={() => setShowEmailChange(!showEmailChange)}
-                      className="text-xs text-[#416900] hover:underline font-medium cursor-pointer"
+                      className="text-xs text-[#416900] dark:text-[#B8F36B] hover:underline font-medium cursor-pointer"
                     >
                       {showEmailChange ? 'Cancel' : 'Change Email'}
                     </button>
@@ -504,25 +512,25 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 </div>
 
                 {showEmailChange && (
-                  <form onSubmit={handleUpdateEmail} className="p-3.5 rounded-xl bg-[#F8F9F5] border border-[#E8E8E5] space-y-3">
-                    <p className="text-[11px] text-[#555] leading-relaxed">
+                  <form onSubmit={handleUpdateEmail} className="p-3.5 rounded-xl bg-[#F8F9F5] dark:bg-[#1A1D16] border border-[#E8E8E5] dark:border-[#282D22] space-y-3">
+                    <p className="text-[11px] text-[#555] dark:text-[#9EA396] leading-relaxed">
                       Enter your new email address. Supabase Auth will send confirmation links to both addresses to verify ownership.
                     </p>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                      <Mail className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                       <input
                         type="email"
                         required
                         value={newEmailInput}
                         onChange={(e) => setNewEmailInput(e.target.value)}
                         placeholder="new-address@example.com"
-                        className="w-full bg-white border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900]"
+                        className="w-full bg-white dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B]"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={updatingEmail}
-                      className="w-full bg-[#181D13] hover:bg-[#252c1e] text-white font-medium py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                      className="w-full bg-[#181D13] dark:bg-[#B8F36B] hover:bg-[#252c1e] dark:hover:bg-[#A7EB50] text-white dark:text-[#102000] font-medium py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                     >
                       {updatingEmail ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Request Email Change</span>}
                     </button>
@@ -531,27 +539,27 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
               </div>
 
               {/* Supabase PostgreSQL & RLS Status */}
-              <div className="rounded-xl border border-[#E8E8E5] p-3.5 space-y-2 text-xs bg-[#FAFBF8]">
+              <div className="rounded-xl border border-[#E8E8E5] dark:border-[#282D22] p-3.5 space-y-2 text-xs bg-[#FAFBF8] dark:bg-[#1A1D16]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 font-semibold text-[#191919]">
-                    <ShieldCheck className="w-4 h-4 text-[#416900]" />
+                  <div className="flex items-center gap-1.5 font-semibold text-[#191919] dark:text-[#ECEEE6]">
+                    <ShieldCheck className="w-4 h-4 text-[#416900] dark:text-[#B8F36B]" />
                     <span>PostgreSQL Row-Level Security</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-semibold border border-transparent dark:border-emerald-800/40">
                     Enforced
                   </span>
                 </div>
-                <p className="text-[#555] text-[11px] leading-relaxed">
-                  Your research history and profile are strictly bound to your Supabase UUID (<code className="bg-[#EAEBE4] px-1 py-0.5 rounded text-[10px]">{user.id.substring(0, 8)}...</code>). Cross-user access is blocked at the database engine level.
+                <p className="text-[#555] dark:text-[#9EA396] text-[11px] leading-relaxed">
+                  Your research history and profile are strictly bound to your Supabase UUID (<code className="bg-[#EAEBE4] dark:bg-[#242C19] text-[#191919] dark:text-[#ECEEE6] px-1 py-0.5 rounded text-[10px]">{user.id.substring(0, 8)}...</code>). Cross-user access is blocked at the database engine level.
                 </p>
-                <div className="pt-2 border-t border-[#F0F1EA] flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-[#717171]">
+                <div className="pt-2 border-t border-[#F0F1EA] dark:border-[#242A1D] flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-[#717171] dark:text-[#9EA396]">
                     <Database className="w-3.5 h-3.5" />
                     <span>SQL Migrations:</span>
                   </div>
                   <button
                     onClick={() => setShowSqlMigration(!showSqlMigration)}
-                    className="text-[11px] text-[#416900] hover:underline font-medium cursor-pointer"
+                    className="text-[11px] text-[#416900] dark:text-[#B8F36B] hover:underline font-medium cursor-pointer"
                   >
                     {showSqlMigration ? 'Hide SQL Script' : 'View SQL Migration'}
                   </button>
@@ -577,11 +585,11 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
               </div>
 
               {/* Actions */}
-              <div className="pt-2 flex items-center justify-between">
+              <div className="pt-2 pb-1 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={signOut}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 font-medium text-xs transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-medium text-xs transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out of Openquire</span>
@@ -600,7 +608,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#E8E8E5] hover:bg-[#F9F9F7] text-[#191919] font-medium text-xs shadow-2xs transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#E8E8E5] dark:border-[#282D22] bg-white dark:bg-[#1A1D16] hover:bg-[#F9F9F7] dark:hover:bg-[#20251A] text-[#191919] dark:text-[#ECEEE6] font-medium text-xs shadow-2xs transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -624,48 +632,48 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-[#E8E8E5]" />
-                <span className="text-[11px] text-[#717171] uppercase tracking-wider">or email</span>
-                <div className="h-px flex-1 bg-[#E8E8E5]" />
+                <div className="h-px flex-1 bg-[#E8E8E5] dark:bg-[#282D22]" />
+                <span className="text-[11px] text-[#717171] dark:text-[#9EA396] uppercase tracking-wider">or email</span>
+                <div className="h-px flex-1 bg-[#E8E8E5] dark:bg-[#282D22]" />
               </div>
 
               {/* Email/Password Form */}
               <form onSubmit={handleEmailSignIn} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">Email address</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">Email address</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Mail className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-medium text-[#434938]">Password</label>
+                    <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6]">Password</label>
                     <button
                       type="button"
                       onClick={() => handleSwitchMode('reset_password')}
-                      className="text-[11px] text-[#416900] hover:underline cursor-pointer"
+                      className="text-[11px] text-[#416900] dark:text-[#B8F36B] hover:underline cursor-pointer"
                     >
                       Forgot password?
                     </button>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Lock className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
@@ -679,12 +687,12 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 </button>
               </form>
 
-              <div className="text-center pt-2 text-xs text-[#717171]">
+              <div className="text-center pt-2 text-xs text-[#717171] dark:text-[#9EA396]">
                 <span>Don't have an account? </span>
                 <button
                   type="button"
                   onClick={() => handleSwitchMode('sign_up')}
-                  className="text-[#416900] font-semibold hover:underline cursor-pointer"
+                  className="text-[#416900] dark:text-[#B8F36B] font-semibold hover:underline cursor-pointer"
                 >
                   Create one now
                 </button>
@@ -701,7 +709,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#E8E8E5] hover:bg-[#F9F9F7] text-[#191919] font-medium text-xs shadow-2xs transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#E8E8E5] dark:border-[#282D22] bg-white dark:bg-[#1A1D16] hover:bg-[#F9F9F7] dark:hover:bg-[#20251A] text-[#191919] dark:text-[#ECEEE6] font-medium text-xs shadow-2xs transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -725,53 +733,53 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-[#E8E8E5]" />
-                <span className="text-[11px] text-[#717171] uppercase tracking-wider">or email</span>
-                <div className="h-px flex-1 bg-[#E8E8E5]" />
+                <div className="h-px flex-1 bg-[#E8E8E5] dark:bg-[#282D22]" />
+                <span className="text-[11px] text-[#717171] dark:text-[#9EA396] uppercase tracking-wider">or email</span>
+                <div className="h-px flex-1 bg-[#E8E8E5] dark:bg-[#282D22]" />
               </div>
 
               <form onSubmit={handleEmailSignUp} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">Email address</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">Email address</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Mail className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">Password</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">Password</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Lock className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">Confirm password</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">Confirm password</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Lock className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="password"
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter your password"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
@@ -785,12 +793,12 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 </button>
               </form>
 
-              <div className="text-center pt-2 text-xs text-[#717171]">
+              <div className="text-center pt-2 text-xs text-[#717171] dark:text-[#9EA396]">
                 <span>Already have an account? </span>
                 <button
                   type="button"
                   onClick={() => handleSwitchMode('sign_in')}
-                  className="text-[#416900] font-semibold hover:underline cursor-pointer"
+                  className="text-[#416900] dark:text-[#B8F36B] font-semibold hover:underline cursor-pointer"
                 >
                   Sign in
                 </button>
@@ -803,22 +811,22 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
           {/* ========================================================================= */}
           {authModalMode === 'reset_password' && (
             <div className="space-y-4">
-              <p className="text-xs text-[#555] leading-relaxed">
+              <p className="text-xs text-[#555] dark:text-[#9EA396] leading-relaxed">
                 Enter your registered email address and we'll send you a link to reset your password.
               </p>
 
               <form onSubmit={handleResetPassword} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">Email address</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">Email address</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Mail className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
@@ -832,11 +840,11 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 </button>
               </form>
 
-              <div className="text-center pt-2 text-xs text-[#717171]">
+              <div className="text-center pt-2 text-xs text-[#717171] dark:text-[#9EA396]">
                 <button
                   type="button"
                   onClick={() => handleSwitchMode('sign_in')}
-                  className="text-[#416900] font-semibold hover:underline cursor-pointer"
+                  className="text-[#416900] dark:text-[#B8F36B] font-semibold hover:underline cursor-pointer"
                 >
                   ← Back to Sign In
                 </button>
@@ -849,37 +857,37 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
           {/* ========================================================================= */}
           {authModalMode === 'update_password' && (
             <div className="space-y-4">
-              <p className="text-xs text-[#555] leading-relaxed">
+              <p className="text-xs text-[#555] dark:text-[#9EA396] leading-relaxed">
                 Enter your new secure password below to complete recovery.
               </p>
 
               <form onSubmit={handleUpdatePassword} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">New Password</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">New Password</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Lock className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[#434938] mb-1">Confirm New Password</label>
+                  <label className="block text-xs font-medium text-[#434938] dark:text-[#ECEEE6] mb-1">Confirm New Password</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-[#717171] absolute left-3 top-2.5" />
+                    <Lock className="w-4 h-4 text-[#717171] dark:text-[#9EA396] absolute left-3 top-2.5" />
                     <input
                       type="password"
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-enter your new password"
-                      className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900]"
+                      className="w-full bg-[#FBFBFA] dark:bg-[#151812] border border-[#E8E8E5] dark:border-[#282D22] rounded-xl pl-9 pr-3 py-2 text-xs text-[#191919] dark:text-[#ECEEE6] placeholder:text-[#999] dark:placeholder:text-[#646A5B] focus:outline-none focus:border-[#416900] dark:focus:border-[#B8F36B] focus:ring-1 focus:ring-[#416900] dark:focus:ring-[#B8F36B]"
                     />
                   </div>
                 </div>
