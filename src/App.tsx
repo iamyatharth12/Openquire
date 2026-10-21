@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppShell } from './components/layout/AppShell';
@@ -120,6 +121,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <AppContent />
+        <Analytics />
       </AuthProvider>
     </ThemeProvider>
   );
