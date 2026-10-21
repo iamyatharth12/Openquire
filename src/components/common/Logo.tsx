@@ -42,7 +42,7 @@ export const Logo: React.FC<LogoProps> = ({
           {/* 4-Pointed Clarity Star in Center */}
           <path
             d="M46 29C46 38.5 53.5 46 63 46C53.5 46 46 53.5 46 63C46 53.5 38.5 46 29 46C38.5 46 46 38.5 46 29Z"
-            fill="#20251A"
+            className="fill-[#20251A] dark:fill-[#ECEEE6]"
           />
         </svg>
       </div>
@@ -50,12 +50,12 @@ export const Logo: React.FC<LogoProps> = ({
       {showWordmark && (
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5">
-            <span className={`tracking-tight text-[#191919] font-sans ${wordmarkSizes[size]}`}>
+            <span className={`tracking-tight text-[#191919] dark:text-[#ECEEE6] font-sans ${wordmarkSizes[size]}`}>
               Openquire
             </span>
           </div>
           {showTagline && (
-            <span className="text-xs text-[#717171] tracking-normal -mt-0.5 font-normal">
+            <span className="text-xs text-[#717171] dark:text-[#9EA396] tracking-normal -mt-0.5 font-normal">
               Research deeper. Know better.
             </span>
           )}

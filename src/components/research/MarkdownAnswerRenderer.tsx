@@ -278,7 +278,7 @@ export const MarkdownAnswerRenderer: React.FC<MarkdownAnswerRendererProps> = ({
 
     // Standard Paragraph (preserves single line breaks within paragraph)
     return (
-      <p key={blockIdx} className="text-sm sm:text-base text-[#191919] leading-relaxed mb-3">
+      <p key={blockIdx} className="text-sm sm:text-base text-[#191919] leading-relaxed mb-3 break-words">
         {lines.map((line, lineIdx) => (
           <React.Fragment key={lineIdx}>
             {renderInline(line)}
@@ -289,5 +289,5 @@ export const MarkdownAnswerRenderer: React.FC<MarkdownAnswerRendererProps> = ({
     );
   };
 
-  return <div className="space-y-1 leading-relaxed text-[#191919]">{rawBlocks.map(renderBlock)}</div>;
+  return <div className="space-y-1 leading-relaxed text-[#191919] break-words min-w-0 w-full">{rawBlocks.map(renderBlock)}</div>;
 };

@@ -132,35 +132,35 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-modal-title"
     >
       <div
-        className="bg-white rounded-2xl border border-[#E8E8E5] shadow-2xl max-w-lg w-full overflow-hidden transition-all animate-in fade-in zoom-in-95 duration-200 my-auto"
+        className="bg-white rounded-2xl border border-[#E8E8E5] shadow-2xl max-w-lg w-full overflow-hidden transition-all animate-in fade-in zoom-in-95 duration-200 my-auto max-h-[92dvh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Banner with Scholarly Warm Aesthetic */}
-        <div className="bg-[#F8F9F5] px-6 pt-7 pb-5 border-b border-[#E8E8E5]">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#E0E5D3] text-[#434938] text-xs font-medium mb-3">
+        <div className="bg-[#F8F9F5] px-4 sm:px-6 pt-5 pb-4 sm:pt-7 sm:pb-5 border-b border-[#E8E8E5] shrink-0">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#E0E5D3] text-[#434938] text-xs font-medium mb-2.5 sm:mb-3">
             <Sparkles className="w-3.5 h-3.5 text-[#416900]" />
             <span>Welcome to Openquire</span>
           </div>
           <h2
             id="onboarding-modal-title"
-            className="text-2xl font-serif font-bold text-[#191919] tracking-tight"
+            className="text-xl sm:text-2xl font-serif font-bold text-[#191919] tracking-tight break-words"
           >
             Let's make Openquire yours.
           </h2>
-          <p className="text-xs text-[#717171] mt-1.5 leading-relaxed">
+          <p className="text-xs text-[#717171] mt-1 sm:mt-1.5 leading-relaxed">
             Personalize your scholarly research workspace. You can update these preferences anytime from your profile settings.
           </p>
         </div>
 
         {/* Error Feedback */}
         {errorMessage && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 animate-in fade-in duration-150">
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 shrink-0 animate-in fade-in duration-150">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div className="flex-1">
               <span className="font-semibold block mb-0.5">Could not save profile</span>
@@ -170,7 +170,7 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
         )}
 
         {/* Form Body */}
-        <form onSubmit={handleContinue} className="p-6 space-y-6">
+        <form onSubmit={handleContinue} className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1">
           {/* Field 1: Preferred Name */}
           <div className="space-y-1.5">
             <label htmlFor="preferred-name-input" className="block text-xs font-semibold text-[#191919]">
@@ -186,7 +186,7 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
               onChange={handleNameChange}
               placeholder="Your name"
               disabled={loading}
-              className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl px-3.5 py-2.5 text-sm text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900] transition-colors disabled:opacity-60"
+              className="w-full bg-[#FBFBFA] border border-[#E8E8E5] rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-[#191919] placeholder:text-[#999] focus:outline-none focus:border-[#416900] focus:ring-1 focus:ring-[#416900] transition-colors disabled:opacity-60"
             />
             <p className="text-[11px] text-[#717171]">
               This is the name displayed on your research exports and workspace.
@@ -206,7 +206,7 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
             </p>
 
             <div
-              className="flex flex-wrap gap-2 pt-1"
+              className="flex flex-wrap gap-1.5 sm:gap-2 pt-1"
               role="group"
               aria-label="Personal research interests"
             >
@@ -219,7 +219,7 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
                     aria-pressed={isSelected}
                     disabled={loading}
                     onClick={() => toggleInterest(interest)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer select-none disabled:cursor-not-allowed ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium transition-all cursor-pointer select-none disabled:cursor-not-allowed ${
                       isSelected
                         ? 'bg-[#181D13] text-[#B8F36B] shadow-2xs scale-[1.02] border border-[#181D13]'
                         : 'bg-[#F2F3EE] hover:bg-[#EAEBE4] text-[#434938] border border-[#E0E2D8]'
@@ -236,12 +236,12 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
           </div>
 
           {/* Buttons */}
-          <div className="pt-3 border-t border-[#F0F1EA] flex items-center justify-between gap-3">
+          <div className="pt-3 border-t border-[#F0F1EA] flex items-center justify-between gap-3 shrink-0">
             <button
               type="button"
               onClick={handleSkip}
               disabled={loading}
-              className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#717171] hover:text-[#191919] hover:bg-[#F2F3EE] transition-colors cursor-pointer disabled:opacity-50"
+              className="px-4 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-[#717171] hover:text-[#191919] hover:bg-[#F2F3EE] transition-colors cursor-pointer disabled:opacity-50"
             >
               Skip for now
             </button>
@@ -249,7 +249,7 @@ const OnboardingModalContent: React.FC<OnboardingModalContentProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] font-semibold py-2.5 px-5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs disabled:opacity-50 active:scale-[0.98]"
+              className="bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] font-semibold py-2.5 px-5 min-h-[44px] rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs disabled:opacity-50 active:scale-[0.98]"
             >
               {loading ? (
                 <>

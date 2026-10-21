@@ -99,10 +99,10 @@ export const UploadsPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="max-w-4xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6 min-w-0">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-semibold text-[#191919] tracking-tight">
+      <div className="min-w-0">
+        <h1 className="text-xl sm:text-2xl font-semibold text-[#191919] tracking-tight break-words">
           Uploads & Context Store
         </h1>
         <p className="text-xs sm:text-sm text-[#717171] mt-0.5">
@@ -112,24 +112,24 @@ export const UploadsPage: React.FC = () => {
 
       {feedback && (
         <div
-          className={`p-3.5 rounded-xl text-xs flex items-center justify-between border ${
+          className={`p-3 sm:p-3.5 rounded-xl text-xs flex items-center justify-between gap-2 border ${
             feedback.type === 'success'
               ? 'bg-[#F1F7EB] text-[#2F5200] border-[#B8F36B]'
               : 'bg-rose-50 text-rose-800 border-rose-200'
           }`}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-[#416900]" />
+              <CheckCircle2 className="w-4 h-4 text-[#416900] shrink-0" />
             ) : (
-              <Info className="w-4 h-4 text-rose-600" />
+              <Info className="w-4 h-4 text-rose-600 shrink-0" />
             )}
-            <span>{feedback.message}</span>
+            <span className="break-words">{feedback.message}</span>
           </div>
           <button
             type="button"
             onClick={() => setFeedback(null)}
-            className="text-xs opacity-70 hover:opacity-100 font-semibold"
+            className="w-7 h-7 flex items-center justify-center text-xs opacity-70 hover:opacity-100 font-semibold shrink-0 cursor-pointer"
           >
             ✕
           </button>
@@ -159,14 +159,14 @@ export const UploadsPage: React.FC = () => {
           handleFiles(e.dataTransfer.files);
         }}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center transition-all bg-white cursor-pointer ${
+        className={`border-2 border-dashed rounded-2xl p-5 sm:p-8 md:p-10 text-center transition-all bg-white cursor-pointer ${
           dragActive
             ? 'border-[#B8F36B] bg-[#F6F3F2]'
             : 'border-[#E8E8E5] hover:border-[#B8F36B]/80 hover:bg-[#F6F3F2]/40'
         }`}
       >
-        <div className="w-12 h-12 rounded-full bg-[#E0E5D3] flex items-center justify-center mx-auto text-[#181D13] mb-3">
-          <Upload className="w-6 h-6 stroke-[2]" />
+        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#E0E5D3] flex items-center justify-center mx-auto text-[#181D13] mb-2.5 sm:mb-3">
+          <Upload className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
         </div>
         <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
           {uploading ? (
@@ -178,14 +178,14 @@ export const UploadsPage: React.FC = () => {
             </>
           )}
         </h3>
-        <p className="text-xs text-[#717171] mt-1 max-w-md mx-auto">
+        <p className="text-xs text-[#717171] mt-1 max-w-md mx-auto leading-relaxed">
           Supports PDF, Markdown, DOCX, TXT, CSV, and JSON files up to 25MB. Files are processed locally in your browser context.
         </p>
       </div>
 
       {/* Uploaded Documents List */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between pb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-[#717171]">
             Indexed Documents ({documents.length})
           </h2>
@@ -195,7 +195,7 @@ export const UploadsPage: React.FC = () => {
         </div>
 
         {documents.length === 0 ? (
-          <div className="bg-white border border-[#E8E8E5] rounded-2xl p-8 text-center space-y-2 shadow-2xs">
+          <div className="bg-white border border-[#E8E8E5] rounded-2xl p-6 sm:p-8 text-center space-y-2 shadow-2xs">
             <FileText className="w-8 h-8 text-[#9E9E99] mx-auto" />
             <h3 className="text-sm font-semibold text-[#191919]">No documents uploaded yet</h3>
             <p className="text-xs text-[#717171] max-w-md mx-auto">
@@ -207,17 +207,17 @@ export const UploadsPage: React.FC = () => {
             {documents.map((doc) => (
               <div
                 key={doc.id}
-                className="bg-white border border-[#E8E8E5] rounded-xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-2xs hover:shadow-xs transition-all"
+                className="bg-white border border-[#E8E8E5] rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-2xs hover:shadow-xs transition-all"
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div className="w-9 h-9 rounded-lg bg-[#F6F3F2] flex items-center justify-center shrink-0 text-[#717171] font-bold text-xs uppercase">
                     {doc.type.slice(0, 4)}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <h4 className="text-xs sm:text-sm font-semibold text-[#191919] truncate">
                       {doc.name}
                     </h4>
-                    <div className="flex items-center gap-2 mt-0.5 text-[11px] font-mono text-[#717171]">
+                    <div className="flex items-center gap-2 mt-0.5 text-[11px] font-mono text-[#717171] flex-wrap">
                       <span>{doc.formattedSize}</span>
                       <span>•</span>
                       <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
@@ -234,8 +234,9 @@ export const UploadsPage: React.FC = () => {
                       e.stopPropagation();
                       handleDelete(doc.id);
                     }}
-                    className="p-1.5 text-[#717171] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                    className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-lg text-[#717171] hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors cursor-pointer"
                     title="Remove document"
+                    aria-label="Remove document"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

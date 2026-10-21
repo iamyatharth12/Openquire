@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { AppShell } from './components/layout/AppShell';
 import { HomePage } from './pages/HomePage';
 import { ResearchPage } from './pages/ResearchPage';
@@ -73,6 +74,9 @@ function AppContent() {
       currentRoute={currentRoute}
       onRouteChange={(route) => setCurrentRoute(route)}
       onOpenResearchItem={handleOpenResearchItem}
+      onExecuteSearch={(query, mode) =>
+        handleStartResearch(query, mode, currentModel || 'gemini-2.5-flash')
+      }
     >
       {currentRoute === 'home' && (
         <HomePage
@@ -113,8 +117,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

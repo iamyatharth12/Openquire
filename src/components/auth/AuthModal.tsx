@@ -316,12 +316,12 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
   const providerName = user?.app_metadata?.provider || 'email';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-[#E8E8E5] shadow-2xl max-w-lg w-full overflow-hidden transition-all animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl border border-[#E8E8E5] shadow-2xl max-w-lg w-full overflow-hidden transition-all animate-in fade-in zoom-in-95 duration-150 max-h-[92dvh] flex flex-col my-auto">
         {/* Header */}
-        <div className="px-6 pt-6 pb-4 border-b border-[#F0F1EA] flex items-center justify-between shrink-0">
-          <div>
-            <h3 className="text-lg font-serif font-bold text-[#191919]">
+        <div className="px-4 sm:px-6 pt-5 pb-3.5 sm:pt-6 sm:pb-4 border-b border-[#F0F1EA] flex items-center justify-between shrink-0">
+          <div className="min-w-0 pr-2">
+            <h3 className="text-base sm:text-lg font-serif font-bold text-[#191919] tracking-tight break-words">
               {authModalMode === 'profile'
                 ? 'Profile & Account Settings'
                 : authModalMode === 'sign_up'
@@ -332,7 +332,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
                 ? 'Set New Password'
                 : 'Sign In to Openquire'}
             </h3>
-            <p className="text-xs text-[#717171] mt-0.5">
+            <p className="text-xs text-[#717171] mt-0.5 leading-relaxed">
               {authModalMode === 'profile'
                 ? 'Manage your preferred name, research interests, and session'
                 : 'Synchronize research history and evidence cross-device'}
@@ -340,7 +340,7 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
           </div>
           <button
             onClick={closeAuthModal}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#717171] hover:text-[#191919] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
+            className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-full flex items-center justify-center text-[#717171] hover:text-[#191919] hover:bg-[#F1F2ED] transition-colors cursor-pointer shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -349,21 +349,21 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
 
         {/* Global Feedback banners */}
         {errorMessage && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 shrink-0">
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 shrink-0">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>{errorMessage}</span>
+            <span className="break-words">{errorMessage}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2 shrink-0">
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2 shrink-0">
             <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>{successMessage}</span>
+            <span className="break-words">{successMessage}</span>
           </div>
         )}
 
         {/* Content body */}
-        <div className="p-6 overflow-y-auto space-y-5">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1">
           {/* ========================================================================= */}
           {/* PROFILE & SETTINGS MODE */}
           {/* ========================================================================= */}

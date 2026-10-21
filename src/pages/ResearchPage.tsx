@@ -24,6 +24,7 @@ import {
   Eye,
   EyeOff,
   Square,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { NavRoute } from '../types/navigation';
 import { credentialVault } from '../services/storage/indexedDbVault';
@@ -482,11 +483,11 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-6 max-w-[1440px] mx-auto">
+    <div className="w-full max-w-[1440px] min-w-0 mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
       {/* Toast Notification */}
       {copiedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#191919] text-white px-4 py-2 rounded-xl text-xs font-medium shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
-          <Check className="w-4 h-4 text-[#B8F36B]" />
+        <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 bg-[#191919] text-white px-4 py-2 rounded-xl text-xs font-medium shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
+          <Check className="w-4 h-4 text-[#B8F36B] shrink-0" />
           <span>Research URL copied to clipboard</span>
         </div>
       )}
@@ -502,12 +503,12 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
               <h4 className="text-xs sm:text-sm font-semibold text-[#191919]">
                 BYOK Security Vault Active
               </h4>
-              <p className="text-xs text-[#717171] mt-0.5">
+              <p className="text-xs text-[#717171] mt-0.5 leading-relaxed">
                 Add your Google Gemini API key in Settings to synthesize live grounded answers with full citation integrity. Keys are kept strictly in your local browser IndexedDB vault.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               type="button"
               onClick={handleFetchWebSourcesOnly}
@@ -528,11 +529,11 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
       )}
 
       {/* Top Query Context & Metabar Header */}
-      <section className="flex flex-col gap-4 pb-4 mb-6 bg-[#F6F3F2]/60 rounded-2xl p-4 sm:p-5 border border-[#E8E8E5]/70">
+      <section className="flex flex-col gap-3.5 pb-4 mb-6 bg-[#F6F3F2]/60 rounded-2xl p-4 sm:p-5 border border-[#E8E8E5]/70">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Breadcrumbs & Title */}
-          <div className="flex flex-col gap-1 min-w-0">
-            <div className="flex items-center gap-1.5 text-xs text-[#717171]">
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 text-xs text-[#717171] flex-wrap">
               <span className="cursor-pointer hover:text-[#191919]" onClick={() => onNavigate?.('home')}>
                 Home
               </span>
@@ -541,7 +542,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
               <span className="text-[#DFE0DC]">/</span>
               <span className="text-[#717171] truncate max-w-xs">{currentQuery}</span>
             </div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#191919] tracking-tight">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-semibold text-[#191919] tracking-tight break-words min-w-0">
               {currentQuery}
             </h1>
           </div>
@@ -550,15 +551,16 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleCopyLink}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#191919] text-xs font-medium rounded-lg border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] bg-white text-[#191919] text-xs font-medium rounded-lg border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>Share</span>
             </button>
             <button
               onClick={handleCopyLink}
-              className="p-2 bg-white text-[#717171] hover:text-[#191919] rounded-lg border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center bg-white text-[#717171] hover:text-[#191919] rounded-lg border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
               title="Copy link"
+              aria-label="Copy link"
             >
               <Link2 className="w-3.5 h-3.5" />
             </button>
@@ -567,8 +569,9 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                 if (hasGeminiKey) executeLiveResearch(currentQuery);
                 else handleFetchWebSourcesOnly();
               }}
-              className="p-2 bg-white text-[#717171] hover:text-[#191919] rounded-lg border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center bg-white text-[#717171] hover:text-[#191919] rounded-lg border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
               title="Re-run search synthesis"
+              aria-label="Re-run search synthesis"
             >
               <RotateCw className={`w-3.5 h-3.5 ${isSynthesizing ? 'animate-spin' : ''}`} />
             </button>
@@ -577,9 +580,9 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
 
         {/* Telemetry Meta Badges & Navigation Switcher */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-[#E8E8E5]/50">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-[#717171]">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs text-[#717171]">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E0E5D3] text-[#181D13] font-medium">
-              <Globe className="w-3.5 h-3.5 text-[#416900]" />
+              <Globe className="w-3.5 h-3.5 text-[#416900] shrink-0" />
               <span>Web Research</span>
             </span>
             <span
@@ -594,8 +597,8 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                   : `Active requested model: ${selectedModel || initialModel || 'Not Configured'}`
               }
             >
-              <Bot className={`w-3.5 h-3.5 ${synthesizedResult?.modelConfirmed ? 'text-emerald-600' : 'text-[#717171]'}`} />
-              <span className="font-mono text-[11px]">
+              <Bot className={`w-3.5 h-3.5 shrink-0 ${synthesizedResult?.modelConfirmed ? 'text-emerald-600' : 'text-[#717171]'}`} />
+              <span className="font-mono text-[11px] truncate max-w-[120px] sm:max-w-none">
                 {synthesizedResult?.modelUsed || selectedModel || initialModel || 'Select Model'}
               </span>
               {synthesizedResult?.modelConfirmed ? (
@@ -609,8 +612,8 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
               )}
             </span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E8E8E5] text-[#191919]">
-              <Library className="w-3.5 h-3.5 text-[#717171]" />
-              <span>{activeSources.length} Verified Sources</span>
+              <Library className="w-3.5 h-3.5 text-[#717171] shrink-0" />
+              <span>{activeSources.length} Sources</span>
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#E5E2E1]/60 text-[#717171] font-mono text-[11px]">
               <Clock className="w-3 h-3" />
@@ -622,11 +625,12 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
             </span>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="inline-flex p-1 bg-[#F1F2ED] rounded-xl text-xs font-medium border border-[#E8E8E5]">
+          {/* Mode Switcher Tabs (Scrollable on small screens) */}
+          <div className="inline-flex p-1 bg-[#F1F2ED] rounded-xl text-xs font-medium border border-[#E8E8E5] overflow-x-auto scrollbar-none max-w-full">
             <button
+              type="button"
               onClick={() => setActiveTab('answer')}
-              className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap min-h-[34px] ${
                 activeTab === 'answer'
                   ? 'bg-white text-[#191919] font-semibold shadow-2xs'
                   : 'text-[#717171] hover:text-[#191919]'
@@ -635,8 +639,14 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
               Answer
             </button>
             <button
-              onClick={() => setActiveTab('sources')}
-              className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+              type="button"
+              onClick={() => {
+                setActiveTab('sources');
+                if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+                  sourcesDrawerRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap min-h-[34px] ${
                 activeTab === 'sources'
                   ? 'bg-white text-[#191919] font-semibold shadow-2xs'
                   : 'text-[#717171] hover:text-[#191919]'
@@ -648,8 +658,9 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
               </span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('images')}
-              className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap min-h-[34px] ${
                 activeTab === 'images'
                   ? 'bg-white text-[#191919] font-semibold shadow-2xs'
                   : 'text-[#717171] hover:text-[#191919]'
@@ -658,8 +669,9 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
               Images
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('related')}
-              className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap min-h-[34px] ${
                 activeTab === 'related'
                   ? 'bg-white text-[#191919] font-semibold shadow-2xs'
                   : 'text-[#717171] hover:text-[#191919]'
@@ -772,7 +784,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
       {/* Main Two-Column Synthesis Engine */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Primary Synthesis Canvas (8 Cols) */}
-        <main className="lg:col-span-8 flex flex-col gap-6 min-w-0">
+        <main className={`lg:col-span-8 flex flex-col gap-6 min-w-0 ${activeTab !== 'sources' ? 'flex' : 'hidden lg:flex'}`}>
           {/* USER FEATURE: SOURCE LOGOS BAR (Initially only logos, click reveals source & name) */}
           <div className="bg-white p-3.5 rounded-2xl border border-[#E8E8E5] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 text-xs font-semibold text-[#191919] shrink-0">
@@ -848,129 +860,239 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
             </div>
           </div>
 
-          {/* Executive Summary Section */}
-          <section className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E8E8E5] shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#416900]">
-                <Sparkles className="w-4 h-4" />
-                <span>Executive Summary</span>
+          {/* TAB: ANSWER / EXECUTIVE SUMMARY */}
+          {activeTab === 'answer' && (
+            <section className="bg-white p-4 sm:p-6 rounded-2xl border border-[#E8E8E5] shadow-xs space-y-4 min-w-0">
+              <div className="flex items-center justify-between pb-1 border-b border-[#E8E8E5]/50 flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#416900]">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Executive Summary</span>
+                </div>
+                <span className="text-[11px] font-medium text-[#717171] bg-[#F1F2ED] px-2 py-0.5 rounded border border-[#E8E8E5]">
+                  {synthesizedResult ? 'Live Model Synthesis' : activeSources.length > 0 ? 'Evidence Retrieved' : 'Awaiting Synthesis'}
+                </span>
               </div>
-              <span className="text-[11px] font-medium text-[#717171] bg-[#F1F2ED] px-2 py-0.5 rounded border border-[#E8E8E5]">
-                {synthesizedResult ? 'Live Model Synthesis' : activeSources.length > 0 ? 'Evidence Retrieved' : 'Awaiting Synthesis'}
-              </span>
-            </div>
 
-            {/* Synthesized Live Answer OR Dynamic Empty/Evidence State */}
-            {synthesizedResult ? (
-              <div className="text-sm sm:text-base text-[#191919] leading-relaxed">
-                <MarkdownAnswerRenderer
-                  content={synthesizedResult.answerText}
-                  onCitationClick={scrollToCitation}
-                  validSourceIds={activeSources.map((s) => s.id)}
-                  highlightedCitationId={highlightedCitationId}
-                />
-                {isInterrupted && (
-                  <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Square className="w-3.5 h-3.5 fill-amber-700 stroke-none" />
-                      <span className="font-medium">Generation was stopped by user. Partial evidence preserved.</span>
+              {/* Synthesized Live Answer OR Dynamic Empty/Evidence State */}
+              {synthesizedResult ? (
+                <div className="text-sm sm:text-base text-[#191919] leading-relaxed min-w-0">
+                  <MarkdownAnswerRenderer
+                    content={synthesizedResult.answerText}
+                    onCitationClick={scrollToCitation}
+                    validSourceIds={activeSources.map((s) => s.id)}
+                    highlightedCitationId={highlightedCitationId}
+                  />
+                  {isInterrupted && (
+                    <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        <Square className="w-3.5 h-3.5 fill-amber-700 stroke-none" />
+                        <span className="font-medium">Generation was stopped by user. Partial evidence preserved.</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => executeLiveResearch(currentQuery, activeConversation?.id, selectedModel)}
+                        className="px-2.5 py-1 rounded-lg bg-amber-200/70 hover:bg-amber-200 font-semibold text-[11px] text-amber-950 transition-colors cursor-pointer"
+                      >
+                        Regenerate
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => executeLiveResearch(currentQuery, activeConversation?.id, selectedModel)}
-                      className="px-2.5 py-1 rounded-lg bg-amber-200/70 hover:bg-amber-200 font-semibold text-[11px] text-amber-950 transition-colors cursor-pointer"
-                    >
-                      Regenerate
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : isSynthesizing ? (
-              <div className="py-8 text-center space-y-2">
-                <div className="w-6 h-6 rounded-full border-2 border-[#B8F36B] border-t-transparent animate-spin mx-auto" />
-                <p className="text-xs text-[#717171]">
-                  Retrieving web sources and synthesizing evidence-grounded answer...
-                </p>
-              </div>
-            ) : activeSources.length > 0 ? (
-              <div className="space-y-3">
-                <div className="p-4 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5] space-y-2">
-                  <h3 className="text-sm font-semibold text-[#191919]">
-                    Web Evidence Retrieved ({activeSources.length} sources)
-                  </h3>
-                  <p className="text-xs text-[#717171] leading-relaxed">
-                    Authoritative sources have been compiled for this topic. Configure your Google Gemini API key or click below to synthesize a grounded, fully cited answer.
-                  </p>
-                  <div className="pt-2 flex flex-wrap items-center gap-2">
-                    {hasGeminiKey ? (
-                      <button
-                        type="button"
-                        onClick={() => executeLiveResearch(currentQuery)}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Synthesize Grounded Answer</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => onNavigate?.('settings-providers')}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
-                      >
-                        <Key className="w-3.5 h-3.5" />
-                        <span>Configure Gemini Key in Settings</span>
-                      </button>
-                    )}
-                  </div>
+                  )}
                 </div>
-              </div>
-            ) : (
-              <div className="p-6 rounded-xl bg-[#F6F3F2]/60 border border-[#E8E8E5] text-center space-y-3">
-                <Search className="w-8 h-8 text-[#9E9E99] mx-auto" />
-                <div className="space-y-1">
-                  <h3 className="text-sm font-semibold text-[#191919]">
-                    {currentQuery ? `Ready to research "${currentQuery}"` : 'No active research session'}
-                  </h3>
-                  <p className="text-xs text-[#717171] max-w-md mx-auto">
-                    {currentQuery
-                      ? 'Fetch live web sources or synthesize a grounded answer using the controls below.'
-                      : 'Enter a question or topic in the composer below to begin a live investigation.'}
+              ) : isSynthesizing ? (
+                <div className="py-8 text-center space-y-2">
+                  <div className="w-6 h-6 rounded-full border-2 border-[#B8F36B] border-t-transparent animate-spin mx-auto" />
+                  <p className="text-xs text-[#717171]">
+                    Retrieving web sources and synthesizing evidence-grounded answer...
                   </p>
                 </div>
-                {currentQuery && (
-                  <div className="flex items-center justify-center gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={handleFetchWebSourcesOnly}
-                      className="px-3.5 py-1.5 rounded-xl bg-white text-[#191919] text-xs font-medium border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
-                    >
-                      Fetch Web Sources
-                    </button>
-                    {hasGeminiKey && (
+              ) : activeSources.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl bg-[#F6F3F2] border border-[#E8E8E5] space-y-2">
+                    <h3 className="text-sm font-semibold text-[#191919]">
+                      Web Evidence Retrieved ({activeSources.length} sources)
+                    </h3>
+                    <p className="text-xs text-[#717171] leading-relaxed">
+                      Authoritative sources have been compiled for this topic. Configure your Google Gemini API key or click below to synthesize a grounded, fully cited answer.
+                    </p>
+                    <div className="pt-2 flex flex-wrap items-center gap-2">
+                      {hasGeminiKey ? (
+                        <button
+                          type="button"
+                          onClick={() => executeLiveResearch(currentQuery)}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Synthesize Grounded Answer</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onNavigate?.('settings-providers')}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                        >
+                          <Key className="w-3.5 h-3.5" />
+                          <span>Configure Gemini Key in Settings</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 rounded-xl bg-[#F6F3F2]/60 border border-[#E8E8E5] text-center space-y-3">
+                  <Search className="w-8 h-8 text-[#9E9E99] mx-auto" />
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-semibold text-[#191919]">
+                      {currentQuery ? `Ready to research "${currentQuery}"` : 'No active research session'}
+                    </h3>
+                    <p className="text-xs text-[#717171] max-w-md mx-auto">
+                      {currentQuery
+                        ? 'Fetch live web sources or synthesize a grounded answer using the controls below.'
+                        : 'Enter a question or topic in the composer below to begin a live investigation.'}
+                    </p>
+                  </div>
+                  {currentQuery && (
+                    <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
                       <button
                         type="button"
-                        onClick={() => executeLiveResearch(currentQuery)}
-                        className="px-3.5 py-1.5 rounded-xl bg-[#B8F36B] text-[#102000] text-xs font-semibold hover:bg-[#A7EB50] transition-colors cursor-pointer shadow-2xs"
+                        onClick={handleFetchWebSourcesOnly}
+                        className="px-3.5 py-2 min-h-[38px] rounded-xl bg-white text-[#191919] text-xs font-medium border border-[#E8E8E5] hover:bg-[#F1F2ED] transition-colors cursor-pointer"
                       >
-                        Synthesize Answer
+                        Fetch Web Sources
                       </button>
-                    )}
-                  </div>
-                )}
+                      {hasGeminiKey && (
+                        <button
+                          type="button"
+                          onClick={() => executeLiveResearch(currentQuery)}
+                          className="px-3.5 py-2 min-h-[38px] rounded-xl bg-[#B8F36B] text-[#102000] text-xs font-semibold hover:bg-[#A7EB50] transition-colors cursor-pointer shadow-2xs"
+                        >
+                          Synthesize Answer
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* TAB: VISUAL SOURCES & MEDIA EVIDENCE */}
+          {activeTab === 'images' && (
+            <section className="bg-white p-4 sm:p-6 rounded-2xl border border-[#E8E8E5] shadow-xs space-y-4 min-w-0">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8E8E5]/60 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-[#416900]" />
+                  <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
+                    Visual Sources & Media Evidence
+                  </h3>
+                </div>
+                <span className="text-xs font-mono text-[#717171]">
+                  {activeSources.length} Media Pins
+                </span>
               </div>
-            )}
-          </section>
+              {activeSources.length === 0 ? (
+                <div className="p-8 text-center text-xs text-[#717171]">
+                  No visual evidence extracted yet for this query.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {activeSources.map((source) => (
+                    <div
+                      key={source.id}
+                      className="group rounded-xl border border-[#E8E8E5] overflow-hidden bg-[#FAFBF8] hover:border-[#B8F36B] transition-all p-3.5 flex flex-col justify-between gap-2.5"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <SourceFavicon
+                          url={source.faviconUrl}
+                          alt={source.name}
+                          initials={source.initials}
+                          bgClass={source.bgClass}
+                          containerClass="w-8 h-8 rounded-lg text-xs shrink-0"
+                          imgClass="w-5 h-5"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-[#191919] truncate">{source.name}</p>
+                          <p className="text-[10px] font-mono text-[#717171] truncate">{source.domain}</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-[#434938] line-clamp-2 leading-relaxed">
+                        {source.title}
+                      </p>
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-[#416900] hover:underline pt-1"
+                      >
+                        <span>View Source Document</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* TAB: RELATED INQUIRIES & QUESTIONS */}
+          {activeTab === 'related' && (
+            <section className="bg-white p-4 sm:p-6 rounded-2xl border border-[#E8E8E5] shadow-xs space-y-4 min-w-0">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8E8E5]/60 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#416900]" />
+                  <h3 className="text-sm sm:text-base font-semibold text-[#191919]">
+                    Related Research Vectors
+                  </h3>
+                </div>
+                <span className="text-xs font-mono text-[#717171]">
+                  Autonomous Explorations
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  `How does ${currentQuery} compare with historical benchmarks?`,
+                  `What are the most contentious debates surrounding ${currentQuery}?`,
+                  `What are the economic, workforce, and regulatory impacts of ${currentQuery}?`,
+                  `What do recent academic research studies predict about ${currentQuery}?`,
+                  `What are practical recommendations and best practices for ${currentQuery}?`,
+                ].map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      if (onNewSearch) {
+                        onNewSearch(suggestion);
+                      } else {
+                        executeLiveResearch(suggestion);
+                      }
+                    }}
+                    className="group text-left p-3.5 sm:p-4 rounded-xl border border-[#E8E8E5] hover:border-[#B8F36B] hover:bg-[#F6F3F2] transition-all flex items-start justify-between gap-3 cursor-pointer shadow-2xs"
+                  >
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <span className="text-[10px] font-mono text-[#717171] uppercase tracking-wider block">
+                        Vector #{idx + 1}
+                      </span>
+                      <p className="text-xs sm:text-sm font-medium text-[#191919] group-hover:text-[#416900] leading-snug">
+                        {suggestion}
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-[#9E9E99] group-hover:text-[#191919] group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Follow-up Research Bar */}
-          <div className="sticky bottom-4 z-20">
+          <div className="sticky bottom-18 md:bottom-4 z-20">
             <form
               onSubmit={handleFollowUpSubmit}
-              className="bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-[#E8E8E5] flex items-center gap-2 transition-all focus-within:border-[#B8F36B]"
+              className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-xl border border-[#E8E8E5] flex items-center gap-1.5 sm:gap-2 transition-all focus-within:border-[#B8F36B]"
             >
               <button
                 type="button"
-                className="p-2 text-[#717171] hover:text-[#191919] hover:bg-[#F1F2ED] rounded-xl transition-colors shrink-0"
+                className="w-9 h-9 min-h-[36px] min-w-[36px] flex items-center justify-center text-[#717171] hover:text-[#191919] hover:bg-[#F1F2ED] rounded-xl transition-colors shrink-0"
                 title="Attach context file"
+                aria-label="Attach file"
               >
                 <Paperclip className="w-4 h-4" />
               </button>
@@ -990,13 +1112,13 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                 value={followUpQuery}
                 onChange={(e) => setFollowUpQuery(e.target.value)}
                 placeholder="Ask a follow-up question or search a new topic..."
-                className="w-full bg-transparent border-0 focus:outline-none text-xs sm:text-sm text-[#191919] placeholder:text-[#9E9E99] px-2 py-1.5 min-w-0"
+                className="w-full bg-transparent border-0 focus:outline-none text-xs sm:text-sm text-[#191919] placeholder:text-[#9E9E99] px-2 py-1.5 min-w-0 min-h-[36px]"
               />
               {isSynthesizing ? (
                 <button
                   type="button"
                   onClick={handleStopGeneration}
-                  className="w-8 h-8 rounded-lg bg-[#191919] hover:bg-[#333333] active:scale-95 text-white shadow-xs flex items-center justify-center shrink-0 cursor-pointer transition-all"
+                  className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-lg bg-[#191919] hover:bg-[#333333] active:scale-95 text-white shadow-xs flex items-center justify-center shrink-0 cursor-pointer transition-all"
                   title="Stop generating"
                   aria-label="Stop generation"
                 >
@@ -1006,7 +1128,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                 <button
                   type="submit"
                   disabled={!followUpQuery.trim()}
-                  className="w-8 h-8 rounded-full bg-[#B8F36B] text-[#102000] hover:bg-[#A7EB50] active:scale-95 shadow-xs flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 transition-all"
+                  className="w-9 h-9 min-h-[36px] min-w-[36px] rounded-full bg-[#B8F36B] text-[#102000] hover:bg-[#A7EB50] active:scale-95 shadow-xs flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-40 transition-all"
                   title="Send follow up"
                   aria-label="Send follow up"
                 >
@@ -1018,7 +1140,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
         </main>
 
         {/* Right Column: Sources & Verified Evidence Drawer (4 Cols) */}
-        <aside ref={sourcesDrawerRef} className="lg:col-span-4 flex flex-col gap-4 min-w-0">
+        <aside ref={sourcesDrawerRef} className={`lg:col-span-4 flex flex-col gap-4 min-w-0 ${activeTab === 'sources' ? 'flex' : 'hidden lg:flex'}`}>
           {/* Sources Header with View Switcher */}
           <div className="flex items-center justify-between pb-1">
             <div className="flex items-center gap-2">

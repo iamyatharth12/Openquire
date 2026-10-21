@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -34,6 +36,12 @@
     background-color: #FAFAF8;
     color: #191919;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  html.dark, html.dark body, body.dark {
+    background-color: #0E100C;
+    color: #ECEEE6;
   }
 
   /* Custom subtle scrollbar */
@@ -51,6 +59,74 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #DFE0DC;
   }
+
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #2A3022;
+  }
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #3B4232;
+  }
+}
+
+/* Universal Dark Mode Surface & Palette Inversion */
+html.dark .bg-white {
+  background-color: #151711 !important;
+}
+html.dark .bg-\[\#FAFAF8\] {
+  background-color: #0E100C !important;
+}
+html.dark .bg-\[\#F6F3F2\] {
+  background-color: #131510 !important;
+}
+html.dark .bg-\[\#F0EDED\] {
+  background-color: #10120D !important;
+}
+html.dark .bg-\[\#F1F2ED\] {
+  background-color: #1B1E16 !important;
+}
+html.dark .bg-\[\#EAEBE4\] {
+  background-color: #21261B !important;
+}
+html.dark .bg-\[\#E0E5D3\] {
+  background-color: #26311A !important;
+}
+html.dark .hover\:bg-\[\#F6F3F2\]:hover {
+  background-color: #1B1F16 !important;
+}
+html.dark .hover\:bg-\[\#F1F2ED\]:hover {
+  background-color: #202619 !important;
+}
+html.dark .hover\:bg-\[\#EAEBE4\]:hover {
+  background-color: #262D1D !important;
+}
+
+html.dark .text-\[\#191919\] {
+  color: #ECEEE6 !important;
+}
+html.dark .text-\[\#181D13\] {
+  color: #D6FF8E !important;
+}
+html.dark .text-\[\#434938\] {
+  color: #A8AE9E !important;
+}
+html.dark .text-\[\#717171\] {
+  color: #9EA396 !important;
+}
+html.dark .text-\[\#9E9E99\] {
+  color: #6C7262 !important;
+}
+
+html.dark .border-\[\#E8E8E5\] {
+  border-color: #242A1D !important;
+}
+html.dark .border-\[\#DFE0DC\] {
+  border-color: #2E3625 !important;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  color-scheme: dark;
 }
 
 /* Citation highlight pulse effect */
