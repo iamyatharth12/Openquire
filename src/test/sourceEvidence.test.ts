@@ -5,6 +5,7 @@ import {
   extractBrandInitials,
   createSourceItemFromNormalized,
   getRetrievalStatusBadge,
+  normalizeSourceDisplayItem,
 } from '../services/synthesis/sourceFormatter';
 import { NormalizedSearchResult } from '../services/search/types';
 
@@ -101,6 +102,37 @@ describe('Source Evidence & Provenance Derivation', () => {
 
     const item3 = createSourceItemFromNormalized(resultEmpty);
     assert.strictEqual(item3.excerpt, 'No text excerpt available from this source.');
+  });
+
+  it('should preserve real displayed evidence for synthesis and exclude placeholder excerpts', () => {
+    const result: NormalizedSearchResult = {
+      id: 2,
+      title: 'Photosynthesis evidence',
+      url: 'https://plants.example/photosynthesis',
+      domain: 'plants.example',
+      snippet: 'Sunlight drives photosynthesis.',
+      extractedContent: 'Chlorophyll absorbs light that drives photosynthesis.',
+      rank: 2,
+      retrievalStatus: 'retrieved',
+    };
+    const displayed = createSourceItemFromNormalized(result);
+    const normalized = normalizeSourceDisplayItem(displayed);
+
+    assert.deepStrictEqual(normalized, {
+      id: 2,
+      title: 'Photosynthesis evidence',
+      url: 'https://plants.example/photosynthesis',
+      domain: 'plants.example',
+      snippet: 'Chlorophyll absorbs light that drives photosynthesis.',
+      faviconUrl: 'https://www.google.com/s2/favicons?domain=plants.example&sz=64',
+      rank: 2,
+      retrievalStatus: 'retrieved',
+      extractedContent: 'Chlorophyll absorbs light that drives photosynthesis.',
+    });
+    assert.strictEqual(
+      normalizeSourceDisplayItem(createSourceItemFromNormalized({ ...result, snippet: '', extractedContent: undefined })),
+      null
+    );
   });
 
   it('should return accurate verification status indicators without claiming independent fact-checking', () => {

@@ -33,6 +33,7 @@ import { NormalizedSearchResult } from '../services/search/types';
 import {
   createSourceItemFromNormalized,
   getRetrievalStatusBadge,
+  normalizeSourceDisplayItem,
   SourceDisplayItem,
 } from '../services/synthesis/sourceFormatter';
 import { useModelSelection } from '../hooks/useModelSelection';
@@ -122,6 +123,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
   const [progressUpdate, setProgressUpdate] = useState<ResearchProgressUpdate | null>(null);
   const [synthesizedResult, setSynthesizedResult] = useState<GroundedAnswerResult | null>(null);
   const [liveSources, setLiveSources] = useState<SourceDisplayItem[] | null>(null);
+  const [liveSourcesQuery, setLiveSourcesQuery] = useState('');
   const [synthesisError, setSynthesisError] = useState<string | null>(null);
   const [copiedToast, setCopiedToast] = useState(false);
 
@@ -189,8 +191,10 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
 
           if (latestAssistant.sources && latestAssistant.sources.length > 0) {
             setLiveSources(latestAssistant.sources.map(createSourceItemFromNormalized));
+            setLiveSourcesQuery(convo.initialQuery || convo.title || '');
           } else {
             setLiveSources([]);
+            setLiveSourcesQuery('');
           }
           setIsInterrupted(Boolean(latestAssistant.isInterrupted));
         } else if (convo.initialQuery || initialQuery) {
@@ -248,7 +252,8 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
   const executeLiveResearch = async (
     queryText: string,
     targetConvoId?: string,
-    modelOverride?: string
+    modelOverride?: string,
+    existingSources?: NormalizedSearchResult[]
   ) => {
     const trimmed = queryText.trim();
     if (!trimmed) return;
@@ -303,6 +308,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
     try {
       const result = await groundedSynthesis.executeResearch(trimmed, {
         model: targetModel || undefined,
+        sources: existingSources,
         signal: controller.signal,
         onProgress: (p) => {
           if (reqId === requestIdRef.current) setProgressUpdate(p);
@@ -310,6 +316,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
         onPartialResult: (partial) => {
           if (reqId === requestIdRef.current && partial.sources) {
             setLiveSources(partial.sources.map(createSourceItemFromNormalized));
+            setLiveSourcesQuery(trimmed);
           }
         },
       });
@@ -427,6 +434,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
       if (reqId === requestIdRef.current) {
         const converted = results.map(createSourceItemFromNormalized);
         setLiveSources(converted);
+        setLiveSourcesQuery(q);
         setSelectedSourceId(1);
       }
     } catch (err: any) {
@@ -445,6 +453,15 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
 
   // Active sources to display from live search results
   const activeSources = liveSources || [];
+
+  const synthesizeCurrentEvidence = (model = selectedModel) => {
+    const sourcesForCurrentQuery = liveSourcesQuery.trim() === currentQueryText.trim() ? activeSources : [];
+    const sources = sourcesForCurrentQuery
+      .map(normalizeSourceDisplayItem)
+      .filter((source): source is NormalizedSearchResult => source !== null);
+
+    executeLiveResearch(currentQueryText, activeConversation?.id, model, sources.length ? sources : undefined);
+  };
 
   const scrollToCitation = (id: number) => {
     setHighlightedCitationId(id);
@@ -781,7 +798,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
           </div>
           <button
             type="button"
-            onClick={() => executeLiveResearch(currentQueryText, activeConversation?.id, selectedModel)}
+            onClick={() => synthesizeCurrentEvidence()}
             className="px-3 py-1 rounded-full bg-amber-200/70 hover:bg-amber-200 dark:bg-amber-900/80 dark:hover:bg-amber-800 text-amber-950 dark:text-amber-200 font-medium transition-colors cursor-pointer shrink-0"
           >
             Retry Research
@@ -803,7 +820,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => executeLiveResearch(currentQueryText, activeConversation?.id, selectedModel)}
+                onClick={() => synthesizeCurrentEvidence()}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
               >
                 <RotateCw className="w-3.5 h-3.5" />
@@ -816,7 +833,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                   availableModels={availableModels}
                   onSelectModel={(newModel) => {
                     selectModel(newModel);
-                    executeLiveResearch(currentQueryText, activeConversation?.id, newModel);
+                    synthesizeCurrentEvidence(newModel);
                   }}
                   onNavigateSettings={() => onNavigate?.('settings-providers')}
                   direction="down"
@@ -972,7 +989,7 @@ export const ResearchPage: React.FC<ResearchPageProps> = ({
                       {hasGeminiKey ? (
                         <button
                           type="button"
-                          onClick={() => executeLiveResearch(currentQueryText, activeConversation?.id, selectedModel)}
+                          onClick={() => synthesizeCurrentEvidence()}
                           className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-[#B8F36B] hover:bg-[#A7EB50] text-[#102000] text-xs font-semibold shadow-2xs transition-all cursor-pointer"
                         >
                           <Sparkles className="w-3.5 h-3.5" />

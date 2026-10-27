@@ -50,6 +50,8 @@ export class GroundedSynthesisEngine {
       onProgress?: (progress: ResearchProgressUpdate) => void;
       model?: string;
       sourcesLimit?: number;
+      /** Use sources already gathered by a multi-query workflow instead of repeating the search. */
+      sources?: NormalizedSearchResult[];
       signal?: AbortSignal;
       onPartialResult?: (partial: { sources?: NormalizedSearchResult[]; answerText?: string }) => void;
     }
@@ -89,23 +91,30 @@ export class GroundedSynthesisEngine {
     // 2. Stage 1: Real Web Search
     options?.onProgress?.({
       stage: 'searching',
-      message: 'Searching the web for authoritative sources...',
+      message: options?.sources
+        ? `Using ${options.sources.length} sources collected from web searches...`
+        : 'Searching the web for authoritative sources...',
     });
 
-    const searchRes = await fetch('/api/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: trimmed, limit: options?.sourcesLimit || 6 }),
-      signal: options?.signal,
-    });
+    let sources: NormalizedSearchResult[];
+    if (options?.sources) {
+      sources = options.sources.slice(0, options.sourcesLimit || 12);
+    } else {
+      const searchRes = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: trimmed, limit: options?.sourcesLimit || 6 }),
+        signal: options?.signal,
+      });
 
-    if (!searchRes.ok) {
-      const err = await searchRes.json().catch(() => ({}));
-      throw new Error(err.error || `Search failed with status ${searchRes.status}`);
+      if (!searchRes.ok) {
+        const err = await searchRes.json().catch(() => ({}));
+        throw new Error(err.error || `Search failed with status ${searchRes.status}`);
+      }
+
+      const searchData = await searchRes.json();
+      sources = searchData.results || [];
     }
-
-    const searchData = await searchRes.json();
-    let sources: NormalizedSearchResult[] = searchData.results || [];
 
     if (sources.length === 0) {
       throw new Error('No search results found for this query. Try adjusting your search terms.');
@@ -190,7 +199,7 @@ MANDATORY CITATION RULES:
 
     const cleanKey = geminiKey.trim();
     const encodedModel = encodeURIComponent(requestedModel);
-    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodedModel}:generateContent`;
     const genRes = await fetch(geminiEndpoint, {
       method: 'POST',
       headers: {

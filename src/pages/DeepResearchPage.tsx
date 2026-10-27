@@ -16,7 +16,6 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useModelSelection } from '../hooks/useModelSelection';
-import { credentialVault } from '../services/storage/indexedDbVault';
 import { NormalizedSearchResult } from '../services/search/types';
 import { groundedSynthesis } from '../services/synthesis/groundedSynthesis';
 import { MarkdownAnswerRenderer } from '../components/research/MarkdownAnswerRenderer';
@@ -138,6 +137,7 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
     setElapsedSeconds(0);
     setFinalReport(null);
     setDiscoveredSources([]);
+    setSubQueries([]);
     setLogs([]);
     setCurrentStepIndex(1);
 
@@ -147,19 +147,18 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
     addLog(`Initiating deep research investigation for: "${trimmed}"`);
 
     try {
-      // Step 1: Planning
+      // Step 1: The investigation uses explicit, deterministic angles rather than implying an AI planner ran.
       setCurrentStepIndex(1);
-      addLog('Scope targets defined. Planning multi-vector investigation matrix.');
-      await new Promise((r) => setTimeout(r, 600));
+      addLog('Preparing three deterministic search angles: current state, challenges, and outlook.');
 
       if (controller.signal.aborted) return;
 
       // Step 2: Generating sub-queries
       setCurrentStepIndex(2);
       const generatedQueries: DeepSubQuery[] = [
-        { text: `${trimmed} trends and current state`, status: 'Queued', isPending: true },
-        { text: `${trimmed} key challenges and analysis`, status: 'Queued', isPending: true },
-        { text: `${trimmed} future outlook and projections`, status: 'Queued', isPending: true },
+        { text: `${trimmed} current state and recent developments`, status: 'Queued', isPending: true },
+        { text: `${trimmed} challenges evidence and analysis`, status: 'Queued', isPending: true },
+        { text: `${trimmed} outlook and projections`, status: 'Queued', isPending: true },
       ];
       setSubQueries(generatedQueries);
       addLog(`Generated ${generatedQueries.length} targeted search queries across distinct angles.`);
@@ -191,23 +190,22 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
             signal: controller.signal,
           });
 
-          if (res.ok) {
-            const data = await res.json();
-            const results: NormalizedSearchResult[] = data.results || [];
-            results.forEach((r) => {
-              if (!collectedSources.some((s) => s.url === r.url)) {
-                collectedSources.push({
-                  ...r,
-                  id: collectedSources.length + 1,
-                });
-              }
-            });
-            setDiscoveredSources([...collectedSources]);
-            addLog(`Vector ${i + 1} returned ${results.length} sources (${collectedSources.length} cumulative).`);
+          if (!res.ok) {
+            const error = await res.json().catch(() => ({}));
+            throw new Error(error.error || `Search returned HTTP ${res.status}`);
           }
+          const data = await res.json();
+          const results: NormalizedSearchResult[] = data.results || [];
+          results.forEach((r) => {
+            if (!collectedSources.some((s) => s.url === r.url)) {
+              collectedSources.push({ ...r, id: collectedSources.length + 1 });
+            }
+          });
+          setDiscoveredSources([...collectedSources]);
+          addLog(`Search ${i + 1} returned ${results.length} results (${collectedSources.length} unique sources).`);
         } catch (searchErr: any) {
           if (searchErr.name === 'AbortError') return;
-          addLog(`Vector ${i + 1} retrieval note: ${searchErr.message || 'completed'}`);
+          addLog(`Search ${i + 1} failed: ${searchErr.message || 'Unknown search error'}`);
         }
 
         setSubQueries((prev) =>
@@ -221,10 +219,13 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
 
       if (controller.signal.aborted) return;
 
+      if (collectedSources.length === 0) {
+        throw new Error('No sources were retrieved. Check your search provider configuration or try again.');
+      }
+
       // Step 4: Reviewing evidence
       setCurrentStepIndex(4);
-      addLog(`Reviewing and ranking ${collectedSources.length} evidence sources.`);
-      await new Promise((r) => setTimeout(r, 600));
+      addLog(`Removed duplicate URLs and retained ${collectedSources.length} unique search results.`);
 
       if (controller.signal.aborted) return;
 
@@ -232,42 +233,19 @@ export const DeepResearchPage: React.FC<DeepResearchPageProps> = ({
       setCurrentStepIndex(5);
       addLog('Synthesizing evidence across all retrieved sources into final report.');
 
-      const geminiKey = await credentialVault.getKey('gemini');
-      if (geminiKey && collectedSources.length > 0) {
-        try {
-          const synth = await groundedSynthesis.executeResearch(trimmed, {
-            sourcesLimit: 8,
-            signal: controller.signal,
-          });
-          setFinalReport(synth.answerText);
-          addLog(`Model synthesis completed successfully with ${synth.citations.totalCitations} verified citations.`);
-        } catch (synthErr: any) {
-          if (synthErr.name === 'AbortError') return;
-          addLog(`Direct synthesis note: ${synthErr.message}. Formatting structured evidence synthesis.`);
-          // Create fallback structured summary from collected sources
-          const summary = `### Executive Report: ${trimmed}\n\nAcross **${collectedSources.length}** authoritative web sources, research reveals multiple distinct perspectives:\n\n${collectedSources
-            .slice(0, 5)
-            .map(
-              (s, idx) =>
-                `**${idx + 1}. [${s.title}](${s.url})** (${s.domain})\n${s.snippet}\n`
-            )
-            .join('\n')}\n\n### Key Takeaways\n- Multi-source convergence on active developments and industry momentum.\n- Detailed analysis available across the cited evidence index.`;
-          setFinalReport(summary);
-        }
-      } else {
-        const summary = `### Executive Report: ${trimmed}\n\nAcross **${collectedSources.length}** authoritative web sources, research reveals multiple distinct perspectives:\n\n${collectedSources
-          .slice(0, 5)
-          .map(
-            (s, idx) =>
-              `**${idx + 1}. [${s.title}](${s.url})** (${s.domain})\n${s.snippet}\n`
-          )
-          .join('\n')}\n\n*Configure your Google Gemini API key in Settings to unlock deep generative synthesis with interactive citation pins.*`;
-        setFinalReport(summary);
-      }
+      const synth = await groundedSynthesis.executeResearch(trimmed, {
+        model: initialModel || selectedModel || undefined,
+        sourcesLimit: 12,
+        sources: collectedSources,
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      setFinalReport(synth.answerText);
+      addLog(`Synthesis completed with ${synth.citations.validCitations} valid citations from the retrieved evidence.`);
 
       // Step 6: Complete
       setCurrentStepIndex(6);
-      addLog('Investigation pipeline completed. Final report generated.', true);
+      addLog('Investigation completed. The report is grounded in the displayed search sources.', true);
       setActiveTab('report');
       setIsRunning(false);
     } catch (err: any) {

@@ -9,6 +9,7 @@ describe('Openquire Research Execution & Search Pipeline', () => {
   beforeEach(async () => {
     // Reset any stored keys before each test
     await credentialVault.removeKey('gemini');
+    await credentialVault.saveSelectedModel('gemini', '');
   });
 
   it('1. should verify shared openquire_vault database schema constants and stores', () => {
@@ -54,6 +55,8 @@ describe('Openquire Research Execution & Search Pipeline', () => {
     // Mock fetch for /api/search and Google Generative Language API
     const originalFetch = globalThis.fetch;
     let modelRequestedInApi = '';
+    let generationUrl = '';
+    let generationApiKeyHeader = '';
 
     globalThis.fetch = (async (url: any, init?: any) => {
       const urlStr = String(url);
@@ -93,6 +96,8 @@ describe('Openquire Research Execution & Search Pipeline', () => {
 
       if (urlStr.includes('generativelanguage.googleapis.com')) {
         modelRequestedInApi = urlStr;
+        generationUrl = urlStr;
+        generationApiKeyHeader = new Headers(init?.headers).get('x-goog-api-key') || '';
         return new Response(
           JSON.stringify({
             candidates: [
@@ -119,13 +124,73 @@ describe('Openquire Research Execution & Search Pipeline', () => {
       assert.ok(result.answerText.includes('Meissner effect'), 'Must contain synthesized answer');
       assert.strictEqual(result.sources.length, 1);
       assert.ok(modelRequestedInApi.includes('gemini-2.5-flash'), 'Must fall back to gemini-2.5-flash');
+      assert.ok(!generationUrl.includes('key='), 'API key must never be included in the provider URL');
+      assert.strictEqual(generationApiKeyHeader, 'AIzaSyMockKeyForModelFallbackTest', 'API key must be sent in the provider header');
       assert.strictEqual(result.citations.validCitations, 1);
     } finally {
       globalThis.fetch = originalFetch;
     }
   });
 
-  it('5. should surface real failure when the Gemini API key is invalid (HTTP 400/401/403)', async () => {
+  it('5. should synthesize from supplied deep-research sources without searching again', async () => {
+    const apiKey = 'AIzaSyMockKeyForSourceOverrideTest';
+    await credentialVault.saveKey('gemini', apiKey);
+
+    const originalFetch = globalThis.fetch;
+    let searchCalls = 0;
+    let generationUrl = '';
+    let generationApiKeyHeader = '';
+    globalThis.fetch = (async (url: any, init?: any) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/search')) {
+        searchCalls += 1;
+        return new Response(JSON.stringify({ results: [] }), { status: 200 });
+      }
+      if (urlStr.includes('/api/retrieve-sources')) {
+        return new Response(JSON.stringify({
+          sources: [{
+            url: 'https://plants.example/photosynthesis',
+            status: 'retrieved',
+            text: 'Chlorophyll absorbs light that drives photosynthesis.',
+          }],
+        }), { status: 200 });
+      }
+      if (urlStr.includes('generativelanguage.googleapis.com')) {
+        generationUrl = urlStr;
+        generationApiKeyHeader = new Headers(init?.headers).get('x-goog-api-key') || '';
+        return new Response(JSON.stringify({
+          candidates: [{ content: { parts: [{ text: 'Chlorophyll captures light energy for photosynthesis [1].' }] } }],
+        }), { status: 200 });
+      }
+      return originalFetch(url, init);
+    }) as any;
+
+    try {
+      const result = await groundedSynthesis.executeResearch('How does photosynthesis work?', {
+        model: 'gemini-2.5-flash',
+        sources: [{
+          id: 1,
+          title: 'Photosynthesis',
+          url: 'https://plants.example/photosynthesis',
+          domain: 'plants.example',
+          snippet: 'Plants convert sunlight into chemical energy.',
+          rank: 1,
+          retrievalStatus: 'pending',
+        }],
+      });
+
+      assert.strictEqual(searchCalls, 0, 'Deep research must synthesize from its collected sources instead of repeating the search');
+      assert.strictEqual(result.sources[0].retrievalStatus, 'retrieved');
+      assert.ok(result.answerText.includes('photosynthesis'));
+      assert.strictEqual(result.citations.validCitations, 1);
+      assert.ok(!generationUrl.includes('key='), 'API key must never be included in the provider URL');
+      assert.strictEqual(generationApiKeyHeader, apiKey, 'API key must be sent in the provider header');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('6. should surface real failure when the Gemini API key is invalid (HTTP 400/401/403)', async () => {
     await credentialVault.saveKey('gemini', 'AIzaSyInvalidKey12345');
 
     const originalFetch = globalThis.fetch;
@@ -181,7 +246,7 @@ describe('Openquire Research Execution & Search Pipeline', () => {
     }
   });
 
-  it('6. should surface real failure when search service is unavailable (HTTP 502/500)', async () => {
+  it('7. should surface real failure when search service is unavailable (HTTP 502/500)', async () => {
     await credentialVault.saveKey('gemini', 'AIzaSyTestKeyValidFormat9999');
 
     const originalFetch = globalThis.fetch;
@@ -217,7 +282,7 @@ describe('Openquire Research Execution & Search Pipeline', () => {
     }
   });
 
-  it('7. should create conversation and avoid duplicate user message on submission', async () => {
+  it('8. should create conversation and avoid duplicate user message on submission', async () => {
     const query = 'What are the geopolitical effects of microchips?';
     const convo = await conversationService.create(query, 'web', 'gemini-2.5-flash');
 
@@ -241,7 +306,7 @@ describe('Openquire Research Execution & Search Pipeline', () => {
     assert.strictEqual(updated?.messages[1].role, 'assistant');
   });
 
-  it('8. should allow retry after failure and persist the successfully resolved answer', async () => {
+  it('9. should allow retry after failure and persist the successfully resolved answer', async () => {
     const convo = await conversationService.create('Retry test query', 'web');
 
     // First attempt failed

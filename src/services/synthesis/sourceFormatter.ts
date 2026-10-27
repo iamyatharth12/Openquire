@@ -88,6 +88,30 @@ export function createSourceItemFromNormalized(raw: NormalizedSearchResult): Sou
   };
 }
 
+/** Rebuilds synthesis evidence from sources retained in the current research view. */
+export function normalizeSourceDisplayItem(source: SourceDisplayItem): NormalizedSearchResult | null {
+  if (
+    !source.url ||
+    !source.title ||
+    !source.excerpt?.trim() ||
+    source.excerpt === 'No text excerpt available from this source.'
+  ) {
+    return null;
+  }
+
+  return {
+    id: source.id,
+    title: source.title,
+    url: source.url,
+    domain: source.domain,
+    snippet: source.excerpt,
+    faviconUrl: source.faviconUrl,
+    rank: source.id,
+    retrievalStatus: source.retrievalStatus || 'pending',
+    extractedContent: source.excerpt,
+  };
+}
+
 export interface RetrievalStatusInfo {
   dotClass: string;
   label: string;
